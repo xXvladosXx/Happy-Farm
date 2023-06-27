@@ -10,15 +10,17 @@ namespace Codebase.Logic.Entity.ProductionEntities.Production
     public class Collectable : ICollectable, IComponent
     {
         private readonly IItem _item;
+        private readonly int _amount;
         private readonly IContainer _playerStorage;
 
         public bool CanBeCollected { get; set; }
 
         public Collectable(IContainer playerStorage,
-            IItem item)
+            IItem item, int amount)
         {
             _playerStorage = playerStorage;
             _item = item;
+            _amount = amount;
         }
 
         public void Interact(Transform transform)
@@ -33,7 +35,7 @@ namespace Codebase.Logic.Entity.ProductionEntities.Production
             if(!CanBeCollected)
                 return;
                 
-            if(_playerStorage.TryToAddToAnySlot(_item,1))
+            if(_playerStorage.TryToAddToAnySlot(_item,_amount))
                 Object.Destroy(transform.gameObject);
         }
     }

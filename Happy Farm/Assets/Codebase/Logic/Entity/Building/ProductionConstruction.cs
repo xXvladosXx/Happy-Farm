@@ -6,11 +6,9 @@ using UnityEngine;
 
 namespace Codebase.Logic.Entity.Building
 {
-    public class ProductionConstruction : IDisposable
+    public class ProductionConstruction : IUpgradable
     {
-        [field: SerializeField] public float ProductionTime { get; private set; }
-
-        private IConsumer _consumer;
+        public IConsumer Consumer { get; private set; }
         public IProducer Producer { get; private set; }
         public Transform Transform { get; private set; }
 
@@ -24,36 +22,21 @@ namespace Codebase.Logic.Entity.Building
         {
             Producer = producer;
             Transform = transform;
-            _consumer = consumer;
+            Consumer = consumer;
+            
             _stateMachine = new EntityStateMachine<ProductionConstruction>();
 
             var idleState = new ProductionBuildingIdleState(this);
-            var productionState = new ProductionBuildingProductionState(this, ProductionTime);
+            var productionState = new ProductionBuildingProductionState(this);
 
             _stateMachine.AddStates(idleState, productionState);
-        }
-
-        public void Initialize()
-        {
-            _consumer.OnConsumed += OnConsumed;
-        }
-        
-        public void Dispose()
-        {
-            _consumer.OnConsumed -= OnConsumed;
-        }
-        
-        private void OnConsumed()
-        {
-            WasConsumed = true;
         }
 
         public void BindTransitions()
         {
             Func<bool> isNotProducing = () => Producer.InProduction == false;
-            Func<bool> wasConsumed = () => WasConsumed;
 
-            _stateMachine.AddTransition<ProductionBuildingIdleState, ProductionBuildingProductionState>(wasConsumed);
+            _stateMachine.AddTransition<ProductionBuildingIdleState, ProductionBuildingProductionState>(() => !isNotProducing());
             _stateMachine.AddTransition<ProductionBuildingProductionState, ProductionBuildingIdleState>(isNotProducing);
 
             _stateMachine.SetState<ProductionBuildingIdleState>();
@@ -63,5 +46,21 @@ namespace Codebase.Logic.Entity.Building
         {
             _stateMachine.Update();
         }
+
+        public void Upgrade(IProducer producer, IConsumer consumer)
+        {
+            Producer = producer;
+            Consumer = consumer;
+        }
+
+        public void Upgrade()
+        {
+            
+        }
+    }
+
+    public interface IUpgradable
+    {
+        void Upgrade();
     }
 }

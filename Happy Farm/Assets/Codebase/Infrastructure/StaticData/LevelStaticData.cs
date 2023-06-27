@@ -1,11 +1,26 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Codebase.Infrastructure.StaticData
 {
     [CreateAssetMenu(fileName = "LevelStaticData", menuName = "StaticData/LevelStaticData")]
     public class LevelStaticData : ScriptableObject
     {
-        [field: SerializeField] public string LevelKey { get; set; }
-        [field: SerializeField] public Vector3 PlayerSpawnPoint { get; set; }
+        public string LevelKey;
+        public List<BuildingSpawnerData> BuildingSpawners = new List<BuildingSpawnerData>();
+    }
+
+    [Serializable]
+    public class BuildingSpawnerData
+    {
+        public BuildingTypeID BuildingTypeID;
+        public Vector3 Position;
+
+        public BuildingSpawnerData(BuildingTypeID buildingTypeId, Vector3 position)
+        {
+            BuildingTypeID = buildingTypeId;
+            Position = position;
+        }
     }
 }

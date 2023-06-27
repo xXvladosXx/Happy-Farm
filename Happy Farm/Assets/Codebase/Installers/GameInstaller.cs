@@ -46,11 +46,14 @@ namespace Codebase.Installers
 
         private void RegisterStaticData()
         {
-            IStaticDataService staticDataService = new StaticDataService(Container.Resolve<IAssetProvider>());
+            IStaticDataService staticDataService = new StaticDataService();
             staticDataService.LoadBuildings();
-            staticDataService.LoadAnimals();
+            staticDataService.LoadStorages();
+            staticDataService.LoadProductionAnimals();
+            staticDataService.LoadEnemyAnimals();
             staticDataService.LoadLevels();
             staticDataService.LoadProducts();
+            staticDataService.LoadSpawnPlaces();
             Container.BindInstance(staticDataService).AsSingle();
         }
 

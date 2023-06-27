@@ -25,9 +25,23 @@ MonoBehaviour:
     - Name: <Item>k__BackingField
       Entry: 10
       Data: 0
-  <AnimalTypeID>k__BackingField: 1
+  <ProductionAnimalTypeID>k__BackingField: 1
   <AnimalPrefab>k__BackingField:
     m_AssetGUID: de9e4d7c91fe5d34b924318644b83888
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  <Health>k__BackingField: 100
+  IdleSpeed: 2
+  RunSpeed: 6
+  HungerThreshold: 20
+  EatingRate: 2
+  EatingAmount: 20
+  HungerRate: 4
+  HungerAmount: 15
+  ProductionName: Milk
+  AnimatorStateHasher:
+    m_AssetGUID: 28dea6c1c5187a64da71fe78d6c68a58
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0

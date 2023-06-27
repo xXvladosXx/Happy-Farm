@@ -15,7 +15,7 @@ namespace Codebase.Logic.Entity.EnemyEntities.States
         {
             Initializer.Collectable.CanBeCollected = false;
 
-            Initializer.Movement.SetSpeed(5);
+            Initializer.Movement.SetSpeed(Initializer.Movement.IdleSpeed);
 
             var target = GetRandomNavMeshPoint(Initializer.Transform.position, 15);
             Initializer.Movement.Move(target);

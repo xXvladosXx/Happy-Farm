@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Codebase.Logic.Storage.Container
+namespace Codebase.Logic.Entity.ProductionEntities.Production
 {
     public interface ICollectable
     {

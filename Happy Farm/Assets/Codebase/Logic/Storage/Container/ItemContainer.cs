@@ -177,6 +177,9 @@ namespace Codebase.Logic.Storage.Container
 
             return false;
         }
+        
+        public int FindItemAmount(string itemId) => 
+            Slots.Where(slot => slot.Item != null && slot.Item.ItemID == itemId).Sum(slot => slot.CurrentAmount);
 
         public void IncreaseCapacity(int capacity)
         {

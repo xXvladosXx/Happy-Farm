@@ -4,28 +4,47 @@ using UnityEngine;
 
 namespace Codebase.Logic.Entity.ProductionEntities.Production
 {
-    public class Producer : IProducer
+    public class TimeProducer : IProducer
     {
+        public float ProductionTime { get; private set; }
+        public Transform Transform { get; }
+        public bool InProduction { get; private set; }
+        public int Amount { get; }
+
         private readonly GameFactory _gameFactory;
         private readonly string _productId;
-        public bool InProduction { get; private set; }
 
-        public Producer(GameFactory gameFactory,
-            string productId)
+        private float _currentTimeInProduction;
+
+        public TimeProducer(GameFactory gameFactory,
+            string productId,
+            float productionTime)
         {
             _gameFactory = gameFactory;
             _productId = productId;
+            ProductionTime = productionTime;
         }
-        
-        public void StartProduction() => 
+
+        public void StartProduction() =>
             InProduction = true;
 
-        public void StopProduction() => 
+        public void StopProduction() =>
             InProduction = false;
-        
-        public async UniTask Produce(Vector3 position)
+
+        public async UniTask Produce(int amount, Vector3 position)
         {
-            var product = await _gameFactory.CreateProduct(_productId, position);
+            Debug.Log($"Production started {_productId}");
+            StartProduction();
+            
+            while (_currentTimeInProduction < ProductionTime)
+            {
+                _currentTimeInProduction += Time.deltaTime;
+                await UniTask.Yield();
+            }
+
+            await _gameFactory.CreateProduct(_productId, position, amount);
+            StopProduction();
+            _currentTimeInProduction = 0;
         }
     }
 }

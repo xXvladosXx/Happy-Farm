@@ -10,12 +10,14 @@ namespace Codebase.Logic.Entity.ProductionEntities.States
         
         public override void OnEnter()
         {
-            Initializer.Movement.SetSpeed(6);
+            Initializer.Movement.ResetSpeed();
         }
 
         public override void OnUpdate()
         {
             Initializer.Eater.Starve();
+            Initializer.Movement.SetSpeed(0);
+            Initializer.AnimatorStateReader.Tick();
         }
     }
 }

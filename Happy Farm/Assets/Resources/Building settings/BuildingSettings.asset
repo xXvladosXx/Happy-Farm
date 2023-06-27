@@ -21,9 +21,14 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  <BuildingTypeID>k__BackingField: 4
+  <BuildingTypeID>k__BackingField: 8
   <BuildingPrefab>k__BackingField:
-    m_AssetGUID: fc803bba40fdbb240b8687ab8db8909a
+    m_AssetGUID: 8c6c0debea1e4a0468da01d5dc70c5e2
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  Item: Whool
+  ProductionTime: 4
+  ProductionAmount: 1
+  ConsumptionAmount: 1
+  ConsumptionItem: Milk

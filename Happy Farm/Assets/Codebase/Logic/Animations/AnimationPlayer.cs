@@ -1,4 +1,5 @@
-﻿using Codebase.Utils.Raycast;
+﻿using Codebase.Logic.Animations.AnimationsReader;
+using Codebase.Utils.Raycast;
 using UnityEngine;
 
 namespace Codebase.Logic.Animations

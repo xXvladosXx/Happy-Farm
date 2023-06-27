@@ -10,27 +10,36 @@ namespace Codebase.Infrastructure.StaticData
     public class StaticDataService : IStaticDataService
     {
         private Dictionary<BuildingTypeID,BuildingSettings> _buildings;
-        private Dictionary<AnimalTypeID, AnimalSettings> _animals;
+        private Dictionary<BuildingTypeID,StorageSettings> _storages;
+        private Dictionary<ProductionAnimalTypeID, ProductionAnimalSettings> _animals;
+        private Dictionary<EnemyAnimalTypeID, EnemyAnimalSettings> _enemyAnimals;
+        private Dictionary<BuildingTypeID,SpawnPlaceBuildingSettings> _spawnPlaces;
         private Dictionary<string, ProductSettings> _products;
         private Dictionary<string, LevelStaticData> _levels;
-        
-        private readonly IAssetProvider _assetProvider;
 
-        public StaticDataService(IAssetProvider assetProvider)
-        {
-            _assetProvider = assetProvider;
-        }
-        
+
         public void LoadBuildings()
         {
             _buildings = Resources.LoadAll<BuildingSettings>(AssetPath.BUILDING_SETTINGS)
                 .ToDictionary(x => x.BuildingTypeID, x => x);
         }
 
-        public void LoadAnimals()
+        public void LoadStorages()
         {
-            _animals = Resources.LoadAll<AnimalSettings>(AssetPath.ANIMAL_SETTINGS)
-                .ToDictionary(x => x.AnimalTypeID, x => x);
+            _storages = Resources.LoadAll<StorageSettings>(AssetPath.STORAGE_SETTINGS)
+                .ToDictionary(x => x.BuildingTypeID, x => x);
+        }
+
+        public void LoadProductionAnimals()
+        {
+            _animals = Resources.LoadAll<ProductionAnimalSettings>(AssetPath.ANIMAL_SETTINGS)
+                .ToDictionary(x => x.ProductionAnimalTypeID, x => x);
+        }
+
+        public void LoadEnemyAnimals()
+        {
+            _enemyAnimals = Resources.LoadAll<EnemyAnimalSettings>(AssetPath.ANIMAL_SETTINGS)
+                .ToDictionary(x => x.EnemyAnimalTypeID, x => x);
         }
 
         public void LoadProducts()
@@ -39,16 +48,34 @@ namespace Codebase.Infrastructure.StaticData
                 .ToDictionary(x => x.ID, x => x);
         }
 
-        public void LoadLevels()
+        public void LoadSpawnPlaces()
         {
+            _spawnPlaces = Resources.LoadAll<SpawnPlaceBuildingSettings>(AssetPath.SPAWN_PLACE_SETTINGS)
+                .ToDictionary(x => x.BuildingTypeID, x => x);
         }
+
+        public void LoadLevels() =>
+            _levels = Resources.LoadAll<LevelStaticData>(AssetPath.LEVEL_SETTINGS)
+                .ToDictionary(x => x.LevelKey, x => x);
 
         public BuildingSettings GetBuilding(BuildingTypeID buildingTypeId) =>
             _buildings.TryGetValue(buildingTypeId, out var buildingSettings)
                 ? buildingSettings : null;
 
-        public AnimalSettings GetAnimal(AnimalTypeID animalTypeId) =>
-            _animals.TryGetValue(animalTypeId, out var animalSettings)
+        public StorageSettings GetStorage(BuildingTypeID buildingTypeId) =>
+            _storages.TryGetValue(buildingTypeId, out var storageSettings)
+                ? storageSettings : null;
+
+        public SpawnPlaceBuildingSettings GetSpawnPlace(BuildingTypeID buildingTypeId) =>
+            _spawnPlaces.TryGetValue(buildingTypeId, out var placeBuildingSettings)
+                ? placeBuildingSettings : null;
+
+        public ProductionAnimalSettings GetProductionAnimal(ProductionAnimalTypeID productionAnimalTypeID) =>
+            _animals.TryGetValue(productionAnimalTypeID, out var animalSettings)
+                ? animalSettings : null;
+
+        public EnemyAnimalSettings GetEnemyAnimal(EnemyAnimalTypeID enemyAnimalTypeID) =>
+            _enemyAnimals.TryGetValue(enemyAnimalTypeID, out var animalSettings)
                 ? animalSettings : null;
 
         public ProductSettings GetProduct(string productTypeId) =>
@@ -57,7 +84,8 @@ namespace Codebase.Infrastructure.StaticData
 
         public LevelStaticData ForLevel(string sceneKey)
         {
-            return null;
+            return  _levels.TryGetValue(sceneKey, out var playerSettings) 
+                ? playerSettings : null;
         }
     }
 }

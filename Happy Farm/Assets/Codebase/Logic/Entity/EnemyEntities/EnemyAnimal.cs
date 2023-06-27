@@ -1,8 +1,10 @@
 ﻿using System;
 using Codebase.Logic.Animations;
+using Codebase.Logic.Animations.AnimationsReader;
 using Codebase.Logic.Entity.EnemyEntities.Catch;
 using Codebase.Logic.Entity.EnemyEntities.States;
 using Codebase.Logic.Entity.Movement;
+using Codebase.Logic.Entity.ProductionEntities.Production;
 using Codebase.Logic.Entity.StateMachine;
 using Codebase.Logic.Storage.Container;
 using Codebase.Utils.Raycast;

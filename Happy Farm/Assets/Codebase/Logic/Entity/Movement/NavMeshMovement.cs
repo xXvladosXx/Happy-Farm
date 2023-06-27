@@ -8,13 +8,17 @@ namespace Codebase.Logic.Entity.Movement
         private readonly NavMeshAgent _navMeshAgent;
 
         public float Speed { get; private set; }
+        public float IdleSpeed { get; private set; }
+        public float RunSpeed { get; private set; }
         public Vector3 Target => _navMeshAgent.destination;
 
         public NavMeshMovement(NavMeshAgent navMeshAgent,
-            float speed)
+            float idleSpeed, float runSpeed)
         {
             _navMeshAgent = navMeshAgent;
-            Speed = speed;
+            Speed = idleSpeed;
+            IdleSpeed = idleSpeed;
+            RunSpeed = runSpeed;
         }
 
         public void SetSpeed(float speed)
@@ -30,6 +34,7 @@ namespace Codebase.Logic.Entity.Movement
             
             _navMeshAgent.updateRotation = false;
             _navMeshAgent.ResetPath();
+            _navMeshAgent.speed = 0;
             _navMeshAgent.velocity = Vector3.zero;
         }
 

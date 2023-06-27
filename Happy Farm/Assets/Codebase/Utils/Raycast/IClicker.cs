@@ -1,4 +1,4 @@
-﻿namespace Codebase.Logic.Entity.EnemyEntities.Catch
+﻿namespace Codebase.Utils.Raycast
 {
     public interface IClicker
     {

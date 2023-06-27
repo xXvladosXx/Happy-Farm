@@ -1,12 +1,13 @@
 ﻿using System;
+using Codebase.Logic.Entity.Movement;
 using UnityEngine;
 
-namespace Codebase.Logic.Animations
+namespace Codebase.Logic.Animations.AnimationsReader
 {
     public class AnimalStateReader : MonoBehaviour, IAnimatorStateReader
     {
         private Animator _animator;
-        private Rigidbody _rigidbody;
+        private IMovable _movable;
         public AnimatorStateHasher AnimatorStateHasher { get; set; }
         public AnimatorState State { get; private set; }
         public float DampTime { get; private set; }
@@ -16,11 +17,11 @@ namespace Codebase.Logic.Animations
 
         public void Construct(AnimatorStateHasher animatorStateHasher,
             Animator animator,
-            Rigidbody rigidbody,
+            IMovable movable,
             float dampTime)
         {
             _animator = animator;
-            _rigidbody = rigidbody;
+            _movable = movable;
             DampTime = dampTime;
             AnimatorStateHasher = animatorStateHasher;
         }
@@ -48,7 +49,7 @@ namespace Codebase.Logic.Animations
 
         public void Tick()
         {
-            _animator.SetFloat(AnimatorStateHasher.SpeedHash, _rigidbody.velocity.magnitude, DampTime, Time.deltaTime);
+            _animator.SetFloat(AnimatorStateHasher.SpeedHash, _movable.Speed, DampTime, Time.deltaTime);
         }
         
         private AnimatorState StateFor(int stateHash)

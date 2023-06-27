@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Codebase.Logic.Animations
+namespace Codebase.Logic.Animations.AnimationsReader
 {
     public interface IAnimatorStateReader
     {

@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Codebase.Infrastructure.AssetService;
 using Codebase.Infrastructure.StaticData;
 using Codebase.Logic.Animations;
+using Codebase.Logic.Animations.AnimationsReader;
 using Codebase.Logic.Entity;
 using Codebase.Logic.Entity.Building;
 using Codebase.Logic.Entity.EnemyEntities;
@@ -17,6 +20,7 @@ using Codebase.Utils.Raycast;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
+using Object = UnityEngine.Object;
 
 namespace Codebase.Gameplay
 {
@@ -35,47 +39,52 @@ namespace Codebase.Gameplay
             _staticDataService = staticDataService;
             _eatableRegistry = eatableRegistry;
         }
-        
-        public void CreatePlayerStorage()
-        {
-            _inventory = new ItemContainer(10);
-        }
 
-        public async UniTask<ProductionAnimal> CreateProductionAnimal(AnimalTypeID animalTypeID)
+        public async UniTask CreatePlayer() => 
+            await _assetProvider.Load<GameObject>(AssetPath.PLAYER);
+
+        public async UniTask<ProductionAnimal> CreateProductionAnimal(ProductionAnimalTypeID productionAnimalTypeID)
         {
-            var setting = _staticDataService.GetAnimal(animalTypeID);
+            var setting = _staticDataService.GetProductionAnimal(productionAnimalTypeID);
             var animal = await _assetProvider.Load<GameObject>(setting.AnimalPrefab);
             var animalInstance = Object.Instantiate(animal, Vector3.zero, Quaternion.identity);
-            var health = new Health(100);
-            var eater = new Eater(20, 2, 4, health);
-            var movement = new NavMeshMovement(animalInstance.GetComponent<NavMeshAgent>(), 10);
-            var producer = new Producer(this, "Milk");
-            
+            var health = new Health(setting.Health);
+            var producer = new InstantProducer(this, setting.ProductionName,1);
+            var eater = new AnimalEater(setting.HungerThreshold, setting.EatingRate, setting.EatingAmount, 
+                setting.HungerRate, health, producer, animalInstance.transform, setting.HungerAmount);
+            var movement = new NavMeshMovement(animalInstance.GetComponent<NavMeshAgent>(), setting.IdleSpeed, setting.RunSpeed);
+
             var healthDestroyable = animalInstance.GetComponent<HealthDestroyable>();
             healthDestroyable.Construct(health);
             healthDestroyable.Initialize();
             
-            var productionAnimal = new ProductionAnimal(eater, movement, animalInstance.transform, _eatableRegistry, producer);
+            var animatorStateReader = animalInstance.GetComponent<AnimalStateReader>();
+            var animatorStateHasher = await _assetProvider.Load<AnimatorStateHasher>(setting.AnimatorStateHasher);
+            animatorStateHasher.Init();
+            animatorStateReader.Construct(animatorStateHasher, animalInstance.GetComponent<Animator>(), movement, .2f);
+            
+            var productionAnimal = new ProductionAnimal(eater, movement, animalInstance.transform,
+                _eatableRegistry, producer, animatorStateReader);
             productionAnimal.BindTransitions();
             productionAnimal.Initialize();
             
             return productionAnimal;
         }
 
-        public async UniTask<EnemyAnimal> CreateEnemyAnimal(AnimalTypeID animalTypeID)
+        public async UniTask<EnemyAnimal> CreateEnemyAnimal(EnemyAnimalTypeID productionAnimalTypeID)
         {
-            var setting = _staticDataService.GetAnimal(animalTypeID);
+            var setting = _staticDataService.GetEnemyAnimal(productionAnimalTypeID);
             var animal = await _assetProvider.Load<GameObject>(setting.AnimalPrefab);
             var animalInstance = Object.Instantiate(animal, Vector3.zero, Quaternion.identity);
-            var catchable = new Catchable(5,2,5);
-            var movement = new NavMeshMovement(animalInstance.GetComponent<NavMeshAgent>(), 10);
-            var collectable = new Collectable(_inventory, setting.Item);
+            var catchable = new Catchable(setting.ClickAmountToCatch,setting.TimeToCatch,setting.MaxTimeToWaitCaught);
+            var movement = new NavMeshMovement(animalInstance.GetComponent<NavMeshAgent>(), setting.IdleSpeed, setting.RunSpeed);
+            var collectable = new Collectable(_inventory, setting.Item, 1);
             
             var animatorStateReader = animalInstance.GetComponent<AnimalStateReader>();
-            var animatorStateHasher = _assetProvider.GetAsset<AnimatorStateHasher>("Enemy State Hasher");
+            
+            var animatorStateHasher = await _assetProvider.Load<AnimatorStateHasher>(setting.AnimatorStateHasher);
             animatorStateHasher.Init();
-            animatorStateReader.Construct(animatorStateHasher, animalInstance.GetComponent<Animator>(),
-                animalInstance.GetComponent<Rigidbody>(), 4);
+            animatorStateReader.Construct(animatorStateHasher, animalInstance.GetComponent<Animator>(), movement, .2f);
 
             var animationPlayer = new AnimationPlayer(animatorStateReader);
 
@@ -98,19 +107,43 @@ namespace Codebase.Gameplay
             return foodInstance;
         }
 
-        public async UniTask<GameObject> CreateProduct(string productId, Vector3 position)
+        public async UniTask<Storage> CreateStorage(BuildingTypeID buildingTypeID, Vector3 position)
+        {
+            var setting = _staticDataService.GetStorage(buildingTypeID);
+
+            var go = await _assetProvider.Load<GameObject>(setting.BuildingPrefab);
+            var storageInstance = Object.Instantiate(go, position, Quaternion.identity);
+            var items = new List<ISlot>();
+            
+            _inventory ??= new ItemContainer(setting.Capacity);
+            
+            foreach (var slot in _inventory.Slots)
+            {
+                items.Add(!slot.IsEmpty ? new Slot(slot.Item, slot.CurrentAmount) : new Slot());
+            }
+            
+            _inventory = new ItemContainer(items, setting.Capacity);
+
+            return storageInstance.GetComponent<Storage>();
+        }
+
+        public async UniTask<GameObject> CreateProduct(string productId, Vector3 position, int productionAmount)
         {
             var setting = _staticDataService.GetProduct(productId);
 
             var go = await _assetProvider.Load<GameObject>(setting.ProductPrefab);
             var productInstance = Object.Instantiate(go, position, Quaternion.identity);
             
-            var collectable = new Collectable(_inventory, setting.Item);
-            collectable.CanBeCollected = true;
-            
+            var collectable = new Collectable(_inventory, setting.Item, productionAmount)
+            {
+                CanBeCollected = true
+            };
+
             var clickable = productInstance.AddComponent<Clickable>();
             clickable.Construct(collectable);
-
+            
+            Debug.Log($"Product created {collectable}");
+            
             return productInstance;
         }
         
@@ -120,17 +153,46 @@ namespace Codebase.Gameplay
 
             var go = await _assetProvider.Load<GameObject>(setting.BuildingPrefab);
             var construction = Object.Instantiate(go, position, Quaternion.identity);
-            var producer = new Producer(this, "Whool");
-            var consumer = new ItemConsumer(_inventory, "Milk", 1);
+            var producer = new TimeProducer(this, setting.Item, setting.ProductionTime);
+            var consumer = new ItemConsumer(setting.ConsumptionItem, setting.ConsumptionAmount);
+            var factory = new Factory(producer, consumer, _inventory);
             
             var clickable = construction.AddComponent<Clickable>();
-            clickable.Construct(consumer);
+            clickable.Construct(factory);
             
             var productionConstruction = new ProductionConstruction(producer, consumer, construction.transform);
-            productionConstruction.Initialize();
             productionConstruction.BindTransitions();
             
             return productionConstruction;
+        }
+        
+        
+        public async UniTask CreateProductionSpawner(BuildingTypeID buildingTypeID, Vector3 buildingSpawnerPosition)
+        {
+            var setting = _staticDataService.GetSpawnPlace(buildingTypeID);
+
+            var go = await _assetProvider.Load<GameObject>(setting.SpawnPlacePrefab);
+            var productInstance = Object.Instantiate(go, buildingSpawnerPosition, Quaternion.identity);
+            var upgrades = new Dictionary<Upgrade, List<IRequirement>>();
+            foreach (var upgrade in setting.Upgrades)
+            {
+                upgrades.Add(upgrade, new List<IRequirement>
+                {
+                    new MoneyRequirement(upgrade.Cost, 4444)
+                });
+            }
+
+            IBuildable buildable = setting.BuildingType switch
+            {
+                ProductionConstructionBuildable => new ProductionConstructionBuildable(this),
+                StorageConstructionBuildable => new StorageConstructionBuildable(this),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            var spawnable = new Spawnable(upgrades, buildable);
+            
+            var clickable = productInstance.GetComponent<Clickable>();
+            clickable.Construct(spawnable);
         }
 
         public void RegisterSavable(GameObject entity)

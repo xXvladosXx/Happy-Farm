@@ -8,9 +8,9 @@ namespace Codebase.Utils.Raycast
     {
         private readonly HashSet<IComponent> _components = new HashSet<IComponent>();
 
-        public void Construct(params IComponent[] states)
+        public void Construct(params IComponent[] components)
         {
-            AddComponents(states);
+            AddComponents(components);
         }
 
         public void Interact()

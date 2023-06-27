@@ -5,41 +5,16 @@ using UnityEngine;
 
 namespace Codebase.Logic.Entity.ProductionEntities.Production
 {
-    public class ItemConsumer : IConsumer, IComponent
+    public class ItemConsumer : IConsumer
     {
-        private readonly IContainer _container;
-        private readonly string _itemId;
-        private readonly int _amount;
+        public string ItemId { get; private set; }
+        public int Amount { get; private set; }
 
-        public event Action OnConsumed;
-        public ItemConsumer(IContainer container,
-            string itemId,
+        public ItemConsumer(string itemId,
             int amount)
         {
-            _container = container;
-            _itemId = itemId;
-            _amount = amount;
-        }
-
-        public void Interact(Transform transform)
-        {
-            TryToConsume();
-        }
-
-        public void Update()
-        {
-        }
-
-        public bool TryToConsume()
-        {
-            if(_container.HasItem(_itemId, _amount))
-            {
-                _container.RemoveItem(_itemId, _amount);
-                OnConsumed?.Invoke();
-                return true;
-            }
-
-            return false;
+            ItemId = itemId;
+            Amount = amount;
         }
     }
 }

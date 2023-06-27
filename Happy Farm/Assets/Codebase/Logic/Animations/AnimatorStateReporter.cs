@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Codebase.Logic.Animations.AnimationsReader;
+using UnityEngine;
 
 namespace Codebase.Logic.Animations
 {

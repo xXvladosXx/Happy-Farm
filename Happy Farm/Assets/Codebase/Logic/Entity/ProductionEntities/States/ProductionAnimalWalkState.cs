@@ -14,7 +14,7 @@ namespace Codebase.Logic.Entity.ProductionEntities.States
 
         public override void OnEnter()
         {
-            Initializer.Movement.SetSpeed(2);
+            Initializer.Movement.SetSpeed(Initializer.Movement.IdleSpeed);
 
             var target = GetRandomNavMeshPoint(Initializer.Transform.position, 15);
             Initializer.Movement.Move(target);
@@ -23,6 +23,7 @@ namespace Codebase.Logic.Entity.ProductionEntities.States
         public override void OnUpdate()
         {
             Initializer.Eater.Starve();
+            Initializer.AnimatorStateReader.Tick();
         }
 
         private Vector3 GetRandomNavMeshPoint(Vector3 origin, float distance)

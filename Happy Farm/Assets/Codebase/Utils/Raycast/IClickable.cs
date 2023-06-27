@@ -2,7 +2,7 @@
 {
     public interface IClickable
     {
-        void Construct(params IComponent[] states);
+        void Construct(params IComponent[] components);
         void Interact();
         void Update();
     }

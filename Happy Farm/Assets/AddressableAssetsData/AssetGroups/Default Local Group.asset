@@ -57,6 +57,38 @@ MonoBehaviour:
     m_Address: Enemy
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 28dea6c1c5187a64da71fe78d6c68a58
+    m_Address: Enemy State Hasher
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 88ca6046aff54784781060333a6437df
+    m_Address: CameraRoot
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 54d11189cc96bf74e8963af72bf08567
+    m_Address: PlaceToSpawnBuilding
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1bfa21250f8205840b6a58ef4dfaa6db
+    m_Address: Dom 1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7d5207c61bde59c4e8a593699795d518
+    m_Address: Dom 2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 79b990f4b71a440489b65a14ae2d9d6f
+    m_Address: WhoolLvl1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8c6c0debea1e4a0468da01d5dc70c5e2
+    m_Address: WhoolLvl2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d85e1c58705697040aa6d29877791e0b
+    m_Address: WhoolLvl3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c8da339eb1f18f04d95d6a48f5f96ef4, type: 2}
   m_SchemaSet:

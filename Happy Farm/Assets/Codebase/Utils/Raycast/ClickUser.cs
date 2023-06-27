@@ -1,10 +1,9 @@
 ﻿using System;
 using Codebase.Utils.Input;
-using Codebase.Utils.Raycast;
 using UnityEngine.InputSystem;
 using Zenject;
 
-namespace Codebase.Logic.Entity.EnemyEntities.Catch
+namespace Codebase.Utils.Raycast
 {
     public class ClickUser : IClicker, IInitializable, IDisposable
     {

@@ -1,4 +1,7 @@
 ﻿using System.Threading.Tasks;
+using Codebase.Infrastructure.StaticData;
+using Codebase.Logic.Entity.Building;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Codebase.Gameplay
@@ -7,5 +10,6 @@ namespace Codebase.Gameplay
     {
         void RegisterSavable(GameObject entity);
         Task CreateUI();
+        UniTask<ProductionConstruction> CreateProductionConstruction(BuildingTypeID buildingTypeID, Vector3 position);
     }
 }

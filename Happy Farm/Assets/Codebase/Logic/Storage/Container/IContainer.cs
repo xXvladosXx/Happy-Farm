@@ -19,5 +19,6 @@ namespace Codebase.Logic.Storage.Container
         void DropFromSlot(int index, int number);
         void IncreaseCapacity(int capacity);
         bool HasItem(string itemId, int amount);
+        int FindItemAmount(string itemId);
     }
 }

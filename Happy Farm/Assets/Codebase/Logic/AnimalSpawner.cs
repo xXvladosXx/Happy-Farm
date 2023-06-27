@@ -32,7 +32,7 @@ namespace Codebase.Logic
         [Button]
         public async UniTask CreateAnimal()
         {
-            var animal = await _gameFactory.CreateProductionAnimal(AnimalTypeID.Cow);
+            var animal = await _gameFactory.CreateProductionAnimal(ProductionAnimalTypeID.Cow);
             _productionAnimals.Add(animal);
             var destroyable = animal.Transform.GetComponent<IDestroyable>();
             destroyable.OnDestroyed += OnAnimalDied;
@@ -48,16 +48,22 @@ namespace Codebase.Logic
         [Button]
         private async UniTask CreateEnemyAnimal()
         {
-            var animal = await _gameFactory.CreateEnemyAnimal(AnimalTypeID.Bear);
+            var animal = await _gameFactory.CreateEnemyAnimal(EnemyAnimalTypeID.Bear);
             _enemyAnimals.Add(animal);
         }
 
         private async UniTask CreateConstruction()
         {
-            var construction = await _gameFactory.CreateProductionConstruction(BuildingTypeID.WoolFactory, Vector3.zero);
+            var construction = await _gameFactory.CreateProductionConstruction(BuildingTypeID.WoolFactoryFirst, Vector3.zero);
             _constructions.Add(construction);
         }
 
+        [Button]
+        private async UniTask CreateSpawnerConstruction()
+        {
+             await _gameFactory.CreateProductionSpawner(BuildingTypeID.WoolFactoryFirst, Vector3.zero);
+        }
+        
         private void Update()
         {
             if(Input.GetKeyDown(KeyCode.Space)) CreateAnimal();

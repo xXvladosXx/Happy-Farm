@@ -7,46 +7,25 @@ namespace Codebase.Logic.Entity.ProductionEntities.States
 {
     public class ProductionAnimalEatState : State<ProductionAnimal>
     {
-        private readonly EatableRegistry _eatableRegistry;
-        private IEatable _eatable;
-
-        public ProductionAnimalEatState(ProductionAnimal stateInitializer, EatableRegistry eatableRegistry) : base(stateInitializer)
+        public ProductionAnimalEatState(ProductionAnimal stateInitializer) : base(stateInitializer)
         {
-            _eatableRegistry = eatableRegistry;
         }
 
         public override void OnEnter()
         {
-            Initializer.Movement.SetSpeed(6);
-
-            FindRandomEatable();
-
-            Initializer.Movement.Move(_eatable.Transform.position);
+            Initializer.AnimatorStateReader.PlayAnimation(Initializer.AnimatorStateReader.AnimatorStateHasher.InteractHash, true);
         }
 
         public override void OnUpdate()
         {
-            if (_eatable == null || _eatable.Equals(null))
-            {
-                FindRandomEatable();
-                if(_eatable == null)
-                    return;
-                
-                Initializer.Movement.Move(_eatable.Transform.position);
-            }
-            
-            Initializer.Eater.Eat(_eatable);
+            Initializer.Movement.SetSpeed(0);
+            Initializer.AnimatorStateReader.Tick();
+            Initializer.Eater.Eat();
         }
 
-        public override async void OnExit()
+        public override void OnExit()
         {
-            await Initializer.Producer.Produce(Initializer.Transform.position);
-        }
-
-        private void FindRandomEatable()
-        {
-            var random = Random.Range(0, _eatableRegistry.Eatables.Count);
-            _eatable = _eatableRegistry.Eatables[random];
+            Initializer.AnimatorStateReader.PlayAnimation(Initializer.AnimatorStateReader.AnimatorStateHasher.InteractHash, false);
         }
     }
 }

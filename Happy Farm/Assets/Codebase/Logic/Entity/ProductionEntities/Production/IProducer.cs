@@ -5,9 +5,9 @@ namespace Codebase.Logic.Entity.ProductionEntities.Production
 {
     public interface IProducer
     {
+        Transform Transform { get; }
         bool InProduction { get; }
-        UniTask Produce(Vector3 position);
-        void StartProduction();
-        void StopProduction();
+        int Amount { get; }
+        UniTask Produce(int amount, Vector3 position);
     }
 }
