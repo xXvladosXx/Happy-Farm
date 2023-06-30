@@ -11,12 +11,12 @@ namespace Codebase.Logic.Entity.ProductionEntities.Production
         public bool InProduction { get; private set; }
         public int Amount { get; }
 
-        private readonly GameFactory _gameFactory;
+        private readonly IGameFactory _gameFactory;
         private readonly string _productId;
 
         private float _currentTimeInProduction;
 
-        public TimeProducer(GameFactory gameFactory,
+        public TimeProducer(IGameFactory gameFactory,
             string productId,
             float productionTime)
         {

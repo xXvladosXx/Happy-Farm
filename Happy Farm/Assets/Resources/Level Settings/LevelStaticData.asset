@@ -18,3 +18,4 @@ MonoBehaviour:
     Position: {x: 0.14, y: 0, z: 7.02}
   - BuildingTypeID: 4
     Position: {x: -7.91, y: 0, z: -7.87}
+  MissionCatalog: {fileID: 11400000, guid: 1d62e76f381f4574fa1a7d4b392e91a5, type: 2}

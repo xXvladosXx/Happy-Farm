@@ -12,6 +12,7 @@ namespace Codebase.Logic.Storage.Container
         [field: SerializeField] public List<ISlot> Slots { get; private set; }
         [field: SerializeField] public int Capacity { get; private set; }
         public bool IsFull => Slots.All(slot => slot.IsFull);
+        public event Action OnContainerUpdated;
 
         public ItemContainer(int capacity)
         {
@@ -32,7 +33,7 @@ namespace Codebase.Logic.Storage.Container
 
         public IItem[] GetAllItems()
         {
-            return new IItem[10];
+            return Slots.Select(slot => slot.Item).ToArray();
         }
 
         public bool TryToAddToAnySlot(IItem item, int number)
@@ -48,6 +49,7 @@ namespace Codebase.Logic.Storage.Container
 
             if (AddItemToSlot(i, item, number))
             {
+                OnContainerUpdated?.Invoke();
                 return true;
             }
 
@@ -63,6 +65,7 @@ namespace Codebase.Logic.Storage.Container
         {
             var slot = Slots.FindIndex(s => s.Item != null && s.Item.ItemID == itemId);
             RemoveFromSlot(slot, number);
+            OnContainerUpdated?.Invoke();
         }
 
         public void DropFromSlot(int index, int number)
@@ -177,7 +180,15 @@ namespace Codebase.Logic.Storage.Container
 
             return false;
         }
-        
+
+        public void AddNewSlots(int difference)
+        {
+            for (int i = 0; i < difference; i++)
+            {
+                Slots.Add(new Slot());
+            }
+        }
+
         public int FindItemAmount(string itemId) => 
             Slots.Where(slot => slot.Item != null && slot.Item.ItemID == itemId).Sum(slot => slot.CurrentAmount);
 

@@ -1,4 +1,5 @@
-﻿using Codebase.Logic.Storage;
+﻿using Codebase.Gameplay;
+using Codebase.Logic.Storage;
 using Codebase.Logic.Storage.Container;
 using Codebase.Utils.Raycast;
 using Sirenix.OdinInspector;
@@ -11,11 +12,11 @@ namespace Codebase.Logic.Entity.ProductionEntities.Production
     {
         private readonly IItem _item;
         private readonly int _amount;
-        private readonly IContainer _playerStorage;
+        private readonly IStorageUser _playerStorage;
 
         public bool CanBeCollected { get; set; }
 
-        public Collectable(IContainer playerStorage,
+        public Collectable(IStorageUser playerStorage,
             IItem item, int amount)
         {
             _playerStorage = playerStorage;
@@ -35,7 +36,7 @@ namespace Codebase.Logic.Entity.ProductionEntities.Production
             if(!CanBeCollected)
                 return;
                 
-            if(_playerStorage.TryToAddToAnySlot(_item,_amount))
+            if(_playerStorage.Inventory.TryToAddToAnySlot(_item,_amount))
                 Object.Destroy(transform.gameObject);
         }
     }

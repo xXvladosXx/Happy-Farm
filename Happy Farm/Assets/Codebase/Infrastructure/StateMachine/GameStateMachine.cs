@@ -14,7 +14,8 @@ namespace Codebase.Infrastructure.StateMachine
             LoadLevelState.Factory loadLevelStateFactory,
             LoadProgressState.Factory loadProgressStateFactory,
             GameLoopState.Factory gameLoopStateFactory,
-            GamePausedState.Factory gamePausedStateFactory)
+            GamePausedState.Factory gamePausedStateFactory,
+            GameOverState.Factory gameOverStateFactory)
         {
             _states = new Dictionary<Type, IExitableState>();
             
@@ -23,6 +24,7 @@ namespace Codebase.Infrastructure.StateMachine
             RegisterState(loadProgressStateFactory.Create(this));
             RegisterState(gameLoopStateFactory.Create(this));
             RegisterState(gamePausedStateFactory.Create(this));
+            RegisterState(gameOverStateFactory.Create(this));
         }
         
         public void Enter<TState>() where TState : class, IState

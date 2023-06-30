@@ -1,5 +1,6 @@
 ﻿using Codebase.Infrastructure.StateMachine;
 using Codebase.Infrastructure.StateMachine.States;
+using Codebase.Infrastructure.StateMachine.States.Core;
 using Zenject;
 
 namespace Codebase.Installers
@@ -13,6 +14,7 @@ namespace Codebase.Installers
             Container.BindFactory<IGameStateMachine, LoadProgressState, LoadProgressState.Factory>();
             Container.BindFactory<IGameStateMachine, GameLoopState, GameLoopState.Factory>();
             Container.BindFactory<IGameStateMachine, GamePausedState, GamePausedState.Factory>();
+            Container.BindFactory<IGameStateMachine, GameOverState, GameOverState.Factory>();
             
             Container.Bind<IGameStateMachine>().To<GameStateMachine>().AsSingle();
         }

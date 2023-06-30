@@ -35,8 +35,8 @@ MonoBehaviour:
   IdleSpeed: 2
   RunSpeed: 6
   HungerThreshold: 20
-  EatingRate: 2
-  EatingAmount: 20
+  EatingRate: 1
+  EatingAmount: 40
   HungerRate: 4
   HungerAmount: 15
   ProductionName: Milk

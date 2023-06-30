@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Codebase.Logic.Storage.Container
 {
@@ -8,6 +9,8 @@ namespace Codebase.Logic.Storage.Container
 
         int Capacity { get; }
         bool IsFull { get; }
+        
+        event Action OnContainerUpdated;
         
         bool TryToAddToAnySlot(IItem item, int number);
         bool AddItemToSlot(int slot, IItem item, int number);
@@ -19,6 +22,7 @@ namespace Codebase.Logic.Storage.Container
         void DropFromSlot(int index, int number);
         void IncreaseCapacity(int capacity);
         bool HasItem(string itemId, int amount);
+        void AddNewSlots(int difference);
         int FindItemAmount(string itemId);
     }
 }

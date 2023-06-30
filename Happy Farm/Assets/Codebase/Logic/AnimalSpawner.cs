@@ -18,13 +18,13 @@ namespace Codebase.Logic
 {
     public class AnimalSpawner : MonoBehaviour
     {
-        private GameFactory _gameFactory;
+        private IGameFactory _gameFactory;
         private List<ProductionAnimal> _productionAnimals = new List<ProductionAnimal>();
         private List<EnemyAnimal> _enemyAnimals = new List<EnemyAnimal>();
         private List<ProductionConstruction> _constructions = new List<ProductionConstruction>();
 
         [Inject]
-        public void Construct(GameFactory gameFactory)
+        public void Construct(IGameFactory gameFactory)
         {
             _gameFactory = gameFactory;
         }

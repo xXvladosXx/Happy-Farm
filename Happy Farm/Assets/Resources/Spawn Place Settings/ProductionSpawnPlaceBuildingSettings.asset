@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f94188ca1e24409d936fb9a2325a87bc, type: 3}
-  m_Name: SpawnPlaceBuildingSettings
-  m_EditorClassIdentifier: 
+  m_Script: {fileID: 0}
+  m_Name: ProductionSpawnPlaceBuildingSettings
+  m_EditorClassIdentifier: Assembly-CSharp:Codebase.Infrastructure.StaticData:ProductionSpawnPlaceBuildingSettings
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
@@ -20,13 +20,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: BuildingType
-      Entry: 7
-      Data: 0|Codebase.Logic.Entity.Building.ProductionConstructionBuildable, Assembly-CSharp
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   BuildingTypeID: 4
   SpawnPlacePrefab:
     m_AssetGUID: 54d11189cc96bf74e8963af72bf08567
@@ -35,11 +29,8 @@ MonoBehaviour:
     m_EditorAssetChanged: 0
   Upgrades:
   - Level: 0
-    BuildingTypeID: 4
-    Cost: 111
-  - Level: 1
     BuildingTypeID: 8
-    Cost: 222
-  - Level: 2
+    Cost: 0
+  - Level: 1
     BuildingTypeID: 16
-    Cost: 3333
+    Cost: 0

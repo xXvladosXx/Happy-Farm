@@ -5,6 +5,7 @@ using Codebase.Infrastructure.SceneManagement;
 using Codebase.Infrastructure.StateMachine;
 using Codebase.Infrastructure.StaticData;
 using Codebase.Logic.Entity.ProductionEntities.Eating;
+using Codebase.Logic.Storage.Container;
 using Codebase.Utils.Input;
 using UnityEngine;
 using Zenject;
@@ -41,7 +42,18 @@ namespace Codebase.Installers
 
             Container.Bind<IInputProvider>().To<InputProvider>().AsSingle();
             Container.Bind<EatableRegistry>().AsSingle();
-            Container.Bind<GameFactory>().AsSingle();
+            Container.Bind<IGameFactory>().To<GameFactory>().AsSingle();
+            
+            CreateInventory();
+        }
+
+        private void CreateInventory()
+        {
+            var storageUser = new StorageUser
+            {
+                Inventory = new ItemContainer(0)
+            };
+            Container.Bind<IStorageUser>().To<StorageUser>().FromInstance(storageUser).AsSingle();
         }
 
         private void RegisterStaticData()

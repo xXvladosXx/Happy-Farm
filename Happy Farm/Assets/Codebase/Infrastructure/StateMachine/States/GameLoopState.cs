@@ -7,10 +7,10 @@ namespace Codebase.Infrastructure.StateMachine.States
     public class GameLoopState : IState
     {
         private readonly IGameStateMachine _gameStateMachine;
-        private readonly GameFactory _gameFactory;
+        private readonly IGameFactory _gameFactory;
 
         public GameLoopState(IGameStateMachine gameStateMachine,
-            GameFactory gameFactory)
+            IGameFactory gameFactory)
         {
             _gameStateMachine = gameStateMachine;
             _gameFactory = gameFactory;
@@ -19,10 +19,6 @@ namespace Codebase.Infrastructure.StateMachine.States
         public void Enter()
         {
           
-        }
-   
-        private void OnPausePerformed()
-        {
         }
 
         public void Exit()

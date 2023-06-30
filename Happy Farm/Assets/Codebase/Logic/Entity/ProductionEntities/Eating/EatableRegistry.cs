@@ -15,5 +15,10 @@ namespace Codebase.Logic.Entity.ProductionEntities.Eating
         {
             Eatables.Remove(eatable);
         }
+        
+        public void Clear()
+        {
+            Eatables.Clear();
+        }
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Codebase.Logic.Entity.Building
 {
-    public class ProductionConstruction : IUpgradable
+    public class ProductionConstruction 
     {
         public IConsumer Consumer { get; private set; }
         public IProducer Producer { get; private set; }
@@ -46,21 +46,5 @@ namespace Codebase.Logic.Entity.Building
         {
             _stateMachine.Update();
         }
-
-        public void Upgrade(IProducer producer, IConsumer consumer)
-        {
-            Producer = producer;
-            Consumer = consumer;
-        }
-
-        public void Upgrade()
-        {
-            
-        }
-    }
-
-    public interface IUpgradable
-    {
-        void Upgrade();
     }
 }

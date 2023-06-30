@@ -6,7 +6,7 @@ namespace Codebase.Logic.Entity.ProductionEntities.Production
 {
     public class InstantProducer : IProducer
     {
-        private readonly GameFactory _gameFactory;
+        private readonly IGameFactory _gameFactory;
         private readonly string _productId;
         private readonly int _productionAmount;
         public int Amount { get; private set; }
@@ -14,7 +14,7 @@ namespace Codebase.Logic.Entity.ProductionEntities.Production
         public Transform Transform { get; }
         public bool InProduction { get; }
 
-        public InstantProducer(GameFactory gameFactory,
+        public InstantProducer(IGameFactory gameFactory,
             string productId,
             int productionAmount)
         {

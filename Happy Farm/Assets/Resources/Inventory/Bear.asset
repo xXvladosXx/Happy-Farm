@@ -21,11 +21,9 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  <Description>k__BackingField: dwd
-  <Icon>k__BackingField: {fileID: 0}
-  <Name>k__BackingField: WWW
-  <PickupPrefab>k__BackingField: {fileID: 0}
-  <WorldPrefab>k__BackingField: {fileID: 0}
+  <Icon>k__BackingField: {fileID: 21300000, guid: 76caf5e4ca559764484493b1342b0952,
+    type: 3}
+  <Name>k__BackingField: Bear
   <IsStackable>k__BackingField: 0
   <MaxItemsInStack>k__BackingField: 1
   <ItemID>k__BackingField: 

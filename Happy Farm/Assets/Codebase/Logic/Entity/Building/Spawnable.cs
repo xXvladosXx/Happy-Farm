@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Codebase.Utils.Raycast;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Codebase.Logic.Entity.Building
@@ -19,7 +20,7 @@ namespace Codebase.Logic.Entity.Building
             _currentUpgrade = upgrades.Keys.First();
         }
 
-        public void Interact(Transform transform)
+        public async void Interact(Transform transform)
         {
             if (_currentUpgrade == null)
                 return;
@@ -30,15 +31,20 @@ namespace Codebase.Logic.Entity.Building
                     return;
             }
 
-            if (_buildable.IsSatisfied())
-            {
-                _buildable.Build(_currentUpgrade.BuildingTypeID, transform);
-                Upgrade();
-            }
+            await Upgrade(transform);
         }
 
         public void Update()
         {
+        }
+
+        public async UniTask Upgrade(Transform transform)
+        {
+            if (_buildable.IsSatisfied())
+            {
+                await _buildable.Build(_currentUpgrade.BuildingTypeID, transform);
+                Upgrade();
+            }
         }
 
         private void Upgrade() => 

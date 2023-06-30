@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Codebase.Logic.QuestSystem.Core;
 using UnityEngine;
 
 namespace Codebase.Infrastructure.StaticData
@@ -9,6 +10,7 @@ namespace Codebase.Infrastructure.StaticData
     {
         public string LevelKey;
         public List<BuildingSpawnerData> BuildingSpawners = new List<BuildingSpawnerData>();
+        public MissionCatalog MissionCatalog;
     }
 
     [Serializable]

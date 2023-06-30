@@ -21,11 +21,9 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  <Description>k__BackingField: awdaw
-  <Icon>k__BackingField: {fileID: 0}
-  <Name>k__BackingField: fafa
-  <PickupPrefab>k__BackingField: {fileID: 0}
-  <WorldPrefab>k__BackingField: {fileID: 0}
-  <IsStackable>k__BackingField: 0
-  <MaxItemsInStack>k__BackingField: 1
+  <Icon>k__BackingField: {fileID: 21300000, guid: adaac68d8e5d693499597113889d11d3,
+    type: 3}
+  <Name>k__BackingField: Milk
+  <IsStackable>k__BackingField: 1
+  <MaxItemsInStack>k__BackingField: 10
   <ItemID>k__BackingField: Milk

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Codebase.Infrastructure.AssetService;
 using Codebase.Infrastructure.StaticData;
 using Codebase.Logic.Animations;
@@ -16,6 +14,7 @@ using Codebase.Logic.Entity.ProductionEntities.Production;
 using Codebase.Logic.Entity.Stats;
 using Codebase.Logic.Storage;
 using Codebase.Logic.Storage.Container;
+using Codebase.UI.Inventory;
 using Codebase.Utils.Raycast;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -29,19 +28,24 @@ namespace Codebase.Gameplay
         private readonly IAssetProvider _assetProvider;
         private readonly IStaticDataService _staticDataService;
         private readonly EatableRegistry _eatableRegistry;
-        private IContainer _inventory;
+        private readonly IStorageUser _storageUser;
+        private GameObject _ui;
 
         public GameFactory(IAssetProvider assetProvider,
             IStaticDataService staticDataService,
+            IStorageUser storageUser,
             EatableRegistry eatableRegistry)
         {
             _assetProvider = assetProvider;
             _staticDataService = staticDataService;
+            _storageUser = storageUser;
             _eatableRegistry = eatableRegistry;
         }
 
-        public async UniTask CreatePlayer() => 
+        public async UniTask CreatePlayer()
+        {
             await _assetProvider.Load<GameObject>(AssetPath.PLAYER);
+        }
 
         public async UniTask<ProductionAnimal> CreateProductionAnimal(ProductionAnimalTypeID productionAnimalTypeID)
         {
@@ -78,7 +82,7 @@ namespace Codebase.Gameplay
             var animalInstance = Object.Instantiate(animal, Vector3.zero, Quaternion.identity);
             var catchable = new Catchable(setting.ClickAmountToCatch,setting.TimeToCatch,setting.MaxTimeToWaitCaught);
             var movement = new NavMeshMovement(animalInstance.GetComponent<NavMeshAgent>(), setting.IdleSpeed, setting.RunSpeed);
-            var collectable = new Collectable(_inventory, setting.Item, 1);
+            var collectable = new Collectable(_storageUser, setting.Item, 1);
             
             var animatorStateReader = animalInstance.GetComponent<AnimalStateReader>();
             
@@ -113,16 +117,17 @@ namespace Codebase.Gameplay
 
             var go = await _assetProvider.Load<GameObject>(setting.BuildingPrefab);
             var storageInstance = Object.Instantiate(go, position, Quaternion.identity);
-            var items = new List<ISlot>();
             
-            _inventory ??= new ItemContainer(setting.Capacity);
-            
-            foreach (var slot in _inventory.Slots)
+            _storageUser.Inventory ??= new ItemContainer(setting.Capacity);
+            var cheater = Object.FindObjectOfType<Cheater>();
+            cheater.Construct(_storageUser);
+            var difference = setting.Capacity - _storageUser.Inventory.Capacity;
+            if(difference > 0)
             {
-                items.Add(!slot.IsEmpty ? new Slot(slot.Item, slot.CurrentAmount) : new Slot());
+                _storageUser.Inventory.AddNewSlots(difference);
             }
             
-            _inventory = new ItemContainer(items, setting.Capacity);
+            _ui.GetComponentInChildren<InventoryUI>().Construct(_storageUser.Inventory);
 
             return storageInstance.GetComponent<Storage>();
         }
@@ -134,7 +139,7 @@ namespace Codebase.Gameplay
             var go = await _assetProvider.Load<GameObject>(setting.ProductPrefab);
             var productInstance = Object.Instantiate(go, position, Quaternion.identity);
             
-            var collectable = new Collectable(_inventory, setting.Item, productionAmount)
+            var collectable = new Collectable(_storageUser, setting.Item, productionAmount)
             {
                 CanBeCollected = true
             };
@@ -155,7 +160,7 @@ namespace Codebase.Gameplay
             var construction = Object.Instantiate(go, position, Quaternion.identity);
             var producer = new TimeProducer(this, setting.Item, setting.ProductionTime);
             var consumer = new ItemConsumer(setting.ConsumptionItem, setting.ConsumptionAmount);
-            var factory = new Factory(producer, consumer, _inventory);
+            var factory = new Factory(producer, consumer, _storageUser);
             
             var clickable = construction.AddComponent<Clickable>();
             clickable.Construct(factory);
@@ -182,14 +187,13 @@ namespace Codebase.Gameplay
                 });
             }
 
-            IBuildable buildable = setting.BuildingType switch
-            {
-                ProductionConstructionBuildable => new ProductionConstructionBuildable(this),
-                StorageConstructionBuildable => new StorageConstructionBuildable(this),
-                _ => throw new ArgumentOutOfRangeException()
-            };
+            var buildable = setting.CreateBuilding(this);
 
             var spawnable = new Spawnable(upgrades, buildable);
+            if (setting.BuildingTypeID != BuildingTypeID.None)
+            {
+                await spawnable.Upgrade(productInstance.transform);;    
+            }
             
             var clickable = productInstance.GetComponent<Clickable>();
             clickable.Construct(spawnable);
@@ -200,9 +204,12 @@ namespace Codebase.Gameplay
 
         }
 
-        public Task CreateUI()
+        public async UniTask CreateUI()
         {
-            throw new System.NotImplementedException();
+            var ui = await _assetProvider.Load<GameObject>(AssetPath.UI_PATH);
+            _ui = Object.Instantiate(ui, Vector3.zero, Quaternion.identity);
+
+            _ui.GetComponentInChildren<InventoryUI>().Construct(_storageUser.Inventory);
         }
     }
 }

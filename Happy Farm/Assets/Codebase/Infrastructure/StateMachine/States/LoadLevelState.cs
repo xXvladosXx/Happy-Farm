@@ -14,7 +14,7 @@ namespace Codebase.Infrastructure.StateMachine.States
     {
         private readonly IGameStateMachine _gameStateMachine;
         private readonly ISceneLoader _sceneLoader;
-        private readonly GameFactory _gameFactory;
+        private readonly IGameFactory _gameFactory;
         private readonly IStaticDataService _staticDataService;
 
         private string _saveName;
@@ -24,7 +24,7 @@ namespace Codebase.Infrastructure.StateMachine.States
 
         public LoadLevelState(IGameStateMachine gameStateMachine,
             ISceneLoader sceneLoader,
-            GameFactory gameFactory,
+            IGameFactory gameFactory,
             IStaticDataService staticDataService)
         {
             _gameStateMachine = gameStateMachine;
@@ -51,7 +51,8 @@ namespace Codebase.Infrastructure.StateMachine.States
 
             // await _gameFactory.CreatePlayer(PlayerTypeID.Warrior, _levelData);
             await _gameFactory.CreatePlayer();
-
+            await _gameFactory.CreateUI();
+            
             foreach (var buildingSpawner in _levelData.BuildingSpawners)
             {
                 await _gameFactory.CreateProductionSpawner(buildingSpawner.BuildingTypeID, buildingSpawner.Position);

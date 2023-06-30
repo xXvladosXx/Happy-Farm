@@ -31,7 +31,7 @@ namespace Codebase.Logic.Storage.Container
         public Slot()
         {
             Item = null;
-            Capacity = 1;
+            Capacity = 64;
             CurrentAmount = 0;
         }
 

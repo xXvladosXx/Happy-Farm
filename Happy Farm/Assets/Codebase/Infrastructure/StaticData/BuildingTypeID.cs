@@ -12,5 +12,6 @@ namespace Codebase.Infrastructure.StaticData
         WoodFactoryThird = (1 << 4),
         StorageFirst = (1 << 5),
         StorageSecond = (1 << 6),
+        None = (1 << 7),
     }
 }

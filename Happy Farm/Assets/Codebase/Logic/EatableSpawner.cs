@@ -17,13 +17,13 @@ namespace Codebase.Logic
 {
     public class EatableSpawner : MonoBehaviour
     {
-        private GameFactory _gameFactory;
+        private IGameFactory _gameFactory;
         private EatableRegistry _eatableRegistry;
         private IRaycastUser _raycastUser;
         private IInputProvider _inputProvider;
 
         [Inject]
-        public void Construct(GameFactory gameFactory,
+        public void Construct(IGameFactory gameFactory,
             EatableRegistry eatableRegistry,
             IRaycastUser raycastUser,
             IInputProvider inputProvider)
