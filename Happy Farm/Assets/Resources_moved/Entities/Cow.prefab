@@ -2191,9 +2191,9 @@ GameObject:
   - component: {fileID: 3451030257773852910}
   - component: {fileID: 3451030257773852916}
   - component: {fileID: 3451030257773852919}
-  - component: {fileID: 3451030257773852918}
   - component: {fileID: -9133948870330409747}
   - component: {fileID: -2339483184264769816}
+  - component: {fileID: 465394526286023776}
   m_Layer: 8
   m_Name: Cow
   m_TagString: Untagged
@@ -2275,27 +2275,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 0
---- !u!114 &3451030257773852918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3451030257773852911}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07ba88bc4b99493db85c0756f2a7a856, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
 --- !u!54 &-9133948870330409747
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2322,6 +2301,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: db61db29bfd844ef92a406fe9fddfcff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &465394526286023776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3451030257773852911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90ca6ce9ecc34d41ad6d36b641172491, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &3451030257794521159

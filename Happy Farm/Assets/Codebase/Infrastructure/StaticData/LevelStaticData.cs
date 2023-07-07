@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Codebase.Logic.Entity.Building;
 using Codebase.Logic.QuestSystem.Core;
 using UnityEngine;
 

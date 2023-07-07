@@ -1,5 +1,4 @@
-﻿using Codebase.Logic.Entity.Stats;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Codebase.Logic.Entity.ProductionEntities.Eating
 {

@@ -1,4 +1,4 @@
-﻿using Codebase.Logic.Entity.ProductionEntities.Eating;
+﻿using System.Linq;
 using Codebase.Logic.Entity.StateMachine;
 using UnityEngine;
 
@@ -26,7 +26,8 @@ namespace Codebase.Logic.Entity.ProductionEntities.States
         private void FindRandomEatable()
         {
             var random = Random.Range(0, Initializer.EatableRegistry.Eatables.Count);
-            Initializer.Eater.Eatable = Initializer.EatableRegistry.Eatables[random];
+            if(Initializer.EatableRegistry.Eatables.Values.Count > 0)
+                Initializer.Eater.Eatable = Initializer.EatableRegistry.Eatables.Values.ToArray()[random];
         }
     }
 }

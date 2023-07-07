@@ -1,5 +1,5 @@
 ﻿using System;
-using Codebase.Logic.Entity.Stats;
+using Codebase.Logic.Stats;
 
 namespace Codebase.Logic.Entity.ProductionEntities.Eating
 {

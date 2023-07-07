@@ -1,4 +1,5 @@
 ﻿using Codebase.Infrastructure.StaticData;
+using Codebase.Logic.Entity.ProductionEntities.Settings;
 using Codebase.Logic.QuestSystem.Core;
 using UnityEngine;
 

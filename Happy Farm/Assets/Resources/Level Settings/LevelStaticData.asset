@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LevelKey: Gameplay
   BuildingSpawners:
+  - BuildingTypeID: 256
+    Position: {x: 8.59, y: 0, z: 1.38}
   - BuildingTypeID: 32
     Position: {x: 0.14, y: 0, z: 7.02}
   - BuildingTypeID: 4

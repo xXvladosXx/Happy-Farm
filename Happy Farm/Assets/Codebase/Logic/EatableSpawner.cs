@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Codebase.Gameplay;
+using Codebase.Infrastructure.Factory;
 using Codebase.Logic.Entity;
 using Codebase.Logic.Entity.ProductionEntities.Eating;
-using Codebase.Logic.Entity.Stats;
 using Codebase.Utils.Input;
 using Codebase.Utils.Raycast;
 using Cysharp.Threading.Tasks;
@@ -18,18 +17,15 @@ namespace Codebase.Logic
     public class EatableSpawner : MonoBehaviour
     {
         private IGameFactory _gameFactory;
-        private EatableRegistry _eatableRegistry;
         private IRaycastUser _raycastUser;
         private IInputProvider _inputProvider;
 
         [Inject]
         public void Construct(IGameFactory gameFactory,
-            EatableRegistry eatableRegistry,
             IRaycastUser raycastUser,
             IInputProvider inputProvider)
         {
             _gameFactory = gameFactory;
-            _eatableRegistry = eatableRegistry;
             _raycastUser = raycastUser;
             _inputProvider = inputProvider;
         }
@@ -63,16 +59,7 @@ namespace Codebase.Logic
         [Button]
         public async UniTask CreateFood(Vector3 position)
         {
-            var food = await _gameFactory.CreateFood("Food", position);
-            _eatableRegistry.Register(food);
-            var destroyable = food.GetComponent<IDestroyable>();
-            destroyable.OnDestroyed += OnFoodDied;
-            
-            void OnFoodDied()
-            {
-                destroyable.OnDestroyed -= OnFoodDied;
-                _eatableRegistry.Unregister(food);
-            }
+            await _gameFactory.CreateFood("Food", position);
         }
     }
 }

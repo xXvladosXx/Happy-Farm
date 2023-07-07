@@ -2,6 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Codebase.Infrastructure.AssetService;
+using Codebase.Logic.Entity.Building;
+using Codebase.Logic.Entity.Building.Settings;
+using Codebase.Logic.Entity.Building.Settings.SpawnPlace;
+using Codebase.Logic.Entity.EnemyEntities.Settings;
+using Codebase.Logic.Entity.ProductionEntities.Settings;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -14,6 +19,7 @@ namespace Codebase.Infrastructure.StaticData
         private Dictionary<ProductionAnimalTypeID, ProductionAnimalSettings> _animals;
         private Dictionary<EnemyAnimalTypeID, EnemyAnimalSettings> _enemyAnimals;
         private Dictionary<BuildingTypeID,SpawnPlaceBuildingSettings> _spawnPlaces;
+        private Dictionary<BuildingTypeID,FoodProductionSettings> _foodProductions;
         private Dictionary<string, ProductSettings> _products;
         private Dictionary<string, LevelStaticData> _levels;
 
@@ -27,6 +33,12 @@ namespace Codebase.Infrastructure.StaticData
         public void LoadStorages()
         {
             _storages = Resources.LoadAll<StorageSettings>(AssetPath.STORAGE_SETTINGS)
+                .ToDictionary(x => x.BuildingTypeID, x => x);
+        }
+
+        public void LoadFoodProductions()
+        {
+            _foodProductions = Resources.LoadAll<FoodProductionSettings>(AssetPath.FOOD_PRODUCTION_SETTINGS)
                 .ToDictionary(x => x.BuildingTypeID, x => x);
         }
 
@@ -65,6 +77,10 @@ namespace Codebase.Infrastructure.StaticData
         public StorageSettings GetStorage(BuildingTypeID buildingTypeId) =>
             _storages.TryGetValue(buildingTypeId, out var storageSettings)
                 ? storageSettings : null;
+
+        public FoodProductionSettings GetFoodProduction(BuildingTypeID buildingTypeId) =>
+            _foodProductions.TryGetValue(buildingTypeId, out var foodProductionSettings)
+                ? foodProductionSettings : null;
 
         public SpawnPlaceBuildingSettings GetSpawnPlace(BuildingTypeID buildingTypeId) =>
             _spawnPlaces.TryGetValue(buildingTypeId, out var placeBuildingSettings)

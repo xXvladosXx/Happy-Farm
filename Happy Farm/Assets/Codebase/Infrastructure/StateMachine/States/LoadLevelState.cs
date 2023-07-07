@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Codebase.Gameplay;
+using Codebase.Infrastructure.Factory;
 using Codebase.Infrastructure.SceneManagement;
 using Codebase.Infrastructure.StateMachine.States.Core;
 using Codebase.Infrastructure.StaticData;

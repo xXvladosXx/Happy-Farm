@@ -1,24 +1,34 @@
 ﻿using System.Collections.Generic;
+using Codebase.Logic.Stats;
+using Zenject;
 
 namespace Codebase.Logic.Entity.ProductionEntities.Eating
 {
-    public class EatableRegistry 
+    public class EatableRegistry : ITickable
     {
-        public List<Eatable> Eatables { get; } = new List<Eatable>();
+        public Dictionary<IDestroyable, Eatable> Eatables { get; } = new();
         
-        public void Register(Eatable eatable)
+        public void Register(IDestroyable destroyable,
+            Eatable eatable)
         {
-            Eatables.Add(eatable);
+            Eatables.Add(destroyable, eatable);
+            destroyable.OnDestroyed += Unregister;
         }
-        
-        public void Unregister(Eatable eatable)
+
+        private void Unregister(IDestroyable obj)
         {
-            Eatables.Remove(eatable);
+            obj.OnDestroyed -= Unregister;
+            Eatables.Remove(obj);
         }
-        
+
         public void Clear()
         {
             Eatables.Clear();
+        }
+
+        public void Tick()
+        {
+            
         }
     }
 }

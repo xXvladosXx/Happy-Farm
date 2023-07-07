@@ -5,6 +5,7 @@ using Codebase.Logic.Animations.AnimationsReader;
 using Codebase.Logic.Entity.Movement;
 using Codebase.Logic.Entity.ProductionEntities.Eating;
 using Codebase.Logic.Entity.ProductionEntities.Production;
+using Codebase.Logic.Entity.ProductionEntities.Production.Producers;
 using Codebase.Logic.Entity.ProductionEntities.States;
 using Codebase.Logic.Entity.StateMachine;
 using Codebase.Utils.Transform;
@@ -28,7 +29,7 @@ namespace Codebase.Logic.Entity.ProductionEntities
         public ProductionAnimal(IEater eater,
             IMovable movement,
             Transform transform,
-            EatableRegistry eatableRegistry, 
+            EatableRegistry eatableRegistry,
             IProducer producer,
             IAnimatorStateReader animatorStateReader)
         {
@@ -54,12 +55,12 @@ namespace Codebase.Logic.Entity.ProductionEntities
 
         public void BindTransitions()
         {
-            Func<bool> hasFoodToEat = () => EatableRegistry.Eatables.Count > 0 && EatableRegistry.Eatables.Count(x => !x.Equals(null)) > 0;
+            Func<bool> hasFoodToEat = () => EatableRegistry.Eatables.Count > 0;
             Func<bool> isHungry = () => _isHungry;
             Func<bool> isNearTarget = () => Transform.IsNear(Movement.Target, 2);
             Func<bool> hasTarget = () => Movement.Target != Vector3.zero;
             Func<bool> healthLessThanZero = () => Eater.Health.CurrentHealth <= 0;
-            Func<bool> hasFood = () => Eater.Eatable != null && !Eater.Eatable.Equals(null);
+            Func<bool> hasCurrentFood = () => Eater.Eatable != null && !Eater.Eatable.Equals(null);
 
             _stateMachine.AddTransition<ProductionAnimalIdleState, ProductionAnimalWalkState>(hasTarget);
             _stateMachine.AddTransition<ProductionAnimalWalkState, ProductionAnimalIdleState>(() => isNearTarget() && !isHungry());
@@ -71,7 +72,7 @@ namespace Codebase.Logic.Entity.ProductionEntities
             _stateMachine.AddTransition<ProductionAnimalWalkState, ProductionAnimalMoveToFoodState>(() => hasFoodToEat() && isHungry());
             
             _stateMachine.AddTransition<ProductionAnimalMoveToFoodState, ProductionAnimalEatState>(isNearTarget);
-            _stateMachine.AddTransition<ProductionAnimalEatState, ProductionAnimalMoveToFoodState>(() => !isHungry() || !hasFoodToEat());
+            _stateMachine.AddTransition<ProductionAnimalEatState, ProductionAnimalMoveToFoodState>(() => !isHungry() || !hasFoodToEat() || !hasCurrentFood());
 
             
             _stateMachine.AddTransition<ProductionAnimalStarveState, ProductionAnimalDeathState>(healthLessThanZero);

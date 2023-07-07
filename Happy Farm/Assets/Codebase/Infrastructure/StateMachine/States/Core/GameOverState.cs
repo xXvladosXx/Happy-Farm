@@ -1,4 +1,4 @@
-﻿using Codebase.Gameplay;
+﻿using Codebase.Infrastructure.Factory;
 using UnityEngine;
 using Zenject;
 

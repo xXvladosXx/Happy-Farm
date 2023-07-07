@@ -1,4 +1,6 @@
 ﻿using Codebase.Infrastructure.StaticData;
+using Codebase.Logic.Entity.Building;
+using Codebase.Logic.QuestSystem.Core;
 using UnityEngine;
 
 namespace Codebase.Logic.QuestSystem
@@ -7,9 +9,7 @@ namespace Codebase.Logic.QuestSystem
     public class BuildingMissionConfig : MissionConfig
     {
         public BuildingTypeID BuildingTypeID;
-        public override Core.Mission CreateMission(MissionRequires missionRequires)
-        {
-            return null;
-        }
+        public override Mission CreateMission(MissionRequires missionRequires) => 
+            new BuildMission(this, missionRequires);
     }
 }

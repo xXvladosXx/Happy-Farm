@@ -14,20 +14,14 @@
             _missionRequires = missionRequires;
         }
 
-        protected override void OnStart()
-        {
+        protected override void OnStart() => 
             _missionRequires.StorageUser.Inventory.OnContainerUpdated += OnResourcesAdded;
-        }
 
-        protected override void OnComplete()
-        {
+        protected override void OnComplete() => 
             _missionRequires.StorageUser.Inventory.OnContainerUpdated -= OnResourcesAdded;
-        }
 
-        protected override float GetProgress()
-        {
-            return (float) _collectedResources / _config.Amount;
-        }
+        protected override float GetProgress() => 
+            (float) _collectedResources / _config.Amount;
 
         private void OnResourcesAdded()
         {

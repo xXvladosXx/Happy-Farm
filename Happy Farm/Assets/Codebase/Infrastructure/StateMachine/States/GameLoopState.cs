@@ -1,4 +1,4 @@
-﻿using Codebase.Gameplay;
+﻿using Codebase.Infrastructure.Factory;
 using Codebase.Infrastructure.StateMachine.States.Core;
 using Zenject;
 

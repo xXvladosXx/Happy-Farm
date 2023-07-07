@@ -1,10 +1,13 @@
-﻿using Codebase.Gameplay;
-using Codebase.Infrastructure;
+﻿using Codebase.Infrastructure;
 using Codebase.Infrastructure.AssetService;
+using Codebase.Infrastructure.Factory;
 using Codebase.Infrastructure.SceneManagement;
 using Codebase.Infrastructure.StateMachine;
 using Codebase.Infrastructure.StaticData;
+using Codebase.Logic.Entity.Building;
+using Codebase.Logic.Entity.ProductionEntities;
 using Codebase.Logic.Entity.ProductionEntities.Eating;
+using Codebase.Logic.Storage;
 using Codebase.Logic.Storage.Container;
 using Codebase.Utils.Input;
 using UnityEngine;
@@ -41,10 +44,17 @@ namespace Codebase.Installers
                 .AsSingle();
 
             Container.Bind<IInputProvider>().To<InputProvider>().AsSingle();
-            Container.Bind<EatableRegistry>().AsSingle();
             Container.Bind<IGameFactory>().To<GameFactory>().AsSingle();
             
             CreateInventory();
+            CreateRegistries();
+        }
+
+        private void CreateRegistries()
+        {
+            Container.BindInterfacesAndSelfTo<BuildingRegistry>().AsSingle();
+            Container.BindInterfacesAndSelfTo<EatableRegistry>().AsSingle();
+            Container.BindInterfacesAndSelfTo<AnimalRegistry>().AsSingle();
         }
 
         private void CreateInventory()
@@ -53,6 +63,7 @@ namespace Codebase.Installers
             {
                 Inventory = new ItemContainer(0)
             };
+            
             Container.Bind<IStorageUser>().To<StorageUser>().FromInstance(storageUser).AsSingle();
         }
 
@@ -66,6 +77,7 @@ namespace Codebase.Installers
             staticDataService.LoadLevels();
             staticDataService.LoadProducts();
             staticDataService.LoadSpawnPlaces();
+            staticDataService.LoadFoodProductions();
             Container.BindInstance(staticDataService).AsSingle();
         }
 

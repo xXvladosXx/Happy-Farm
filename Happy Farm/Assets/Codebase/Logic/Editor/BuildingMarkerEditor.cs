@@ -1,4 +1,5 @@
 ﻿using Codebase.Infrastructure.StaticData;
+using Codebase.Logic.Entity.Building;
 using UnityEditor;
 using UnityEngine;
 

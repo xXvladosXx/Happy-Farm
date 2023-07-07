@@ -14,6 +14,12 @@ namespace Codebase.Logic.Storage.Container
         public bool IsFull => Slots.All(slot => slot.IsFull);
         public event Action OnContainerUpdated;
 
+        public ItemContainer()
+        {
+            Slots = new List<ISlot>();
+            Capacity = 0;
+        }
+        
         public ItemContainer(int capacity)
         {
             Slots = new List<ISlot>();
