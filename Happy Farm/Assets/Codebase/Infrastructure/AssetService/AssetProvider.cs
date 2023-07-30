@@ -6,11 +6,12 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using Zenject;
 using Object = UnityEngine.Object;
 
 namespace Codebase.Infrastructure.AssetService
 {
-    public class AssetProvider : IAssetProvider
+    public class AssetProvider : IAssetProvider, IInitializable
     {
         private readonly Dictionary<string, AsyncOperationHandle> _completedCashe = new Dictionary<string, AsyncOperationHandle>();
         private readonly Dictionary<string, List<AsyncOperationHandle>> _handles = new Dictionary<string, List<AsyncOperationHandle>>();

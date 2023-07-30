@@ -2,7 +2,7 @@
 {
     public interface IShop
     {
-        void Sell(int amount);
+        bool WasSold(int amount);
         void Buy(int amount);
     }
 }

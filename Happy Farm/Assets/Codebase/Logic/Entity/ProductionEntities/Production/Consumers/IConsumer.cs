@@ -1,9 +1,10 @@
 ﻿namespace Codebase.Logic.Entity.ProductionEntities.Production.Consumers
 {
-    public interface IConsumer<T>
+    public interface IConsumer<T, T1>
     {
-        int MaxAmount { get; }
+        T1 MaxAmount { get; }
         T GetProduct();
-        int Consume();
+        bool CanConsume(T1 amount);
+        T1 Consume(T1 amount);
     }
 }

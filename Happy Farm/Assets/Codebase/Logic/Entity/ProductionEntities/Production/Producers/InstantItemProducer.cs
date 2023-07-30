@@ -10,15 +10,17 @@ namespace Codebase.Logic.Entity.ProductionEntities.Production.Producers
         private readonly string _productId;
         private readonly int _productionAmount;
         public int Amount { get; private set; }
-        public bool InProduction { get; }
+        public Transform Transform { get; }
 
         public InstantItemProducer(IGameFactory gameFactory,
             string productId,
-            int productionAmount)
+            int productionAmount, 
+            Transform transform)
         {
             _gameFactory = gameFactory;
             _productId = productId;
             Amount = productionAmount;
+            Transform = transform;
         }
         
         public async UniTask Produce(int amount, Vector3 position)

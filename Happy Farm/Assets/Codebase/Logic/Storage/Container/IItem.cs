@@ -9,5 +9,6 @@ namespace Codebase.Logic.Storage.Container
         bool IsStackable { get; }
         int MaxItemsInStack { get; }
         string ItemID { get; }
+        int Price { get; }
     }
 }

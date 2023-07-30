@@ -11,7 +11,6 @@ namespace Codebase.Logic.Entity.Building.Settings
         public AssetReferenceGameObject BuildingPrefab;
         public float ProductionTime;
         public int ProductionAmount;
-        public int MaxAmount;
         public int Cost;
     }
 }

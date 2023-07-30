@@ -93,6 +93,22 @@ MonoBehaviour:
     m_Address: UI
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 3af6e833063da5c4aba54783760a14ff
+    m_Address: Storage
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e82d9dca2b3eccb42ab32058d0a2ea4c
+    m_Address: FoodSpawner
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1b762d2f78ac0ea4ca9e448ef34147ea
+    m_Address: WhoolFactory
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 52820490f0892414381b66548a94cb9a
+    m_Address: Upgrader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c8da339eb1f18f04d95d6a48f5f96ef4, type: 2}
   m_SchemaSet:

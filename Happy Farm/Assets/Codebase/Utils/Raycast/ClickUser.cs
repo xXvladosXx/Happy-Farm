@@ -1,10 +1,16 @@
 ﻿using System;
+using Codebase.Logic;
 using Codebase.Utils.Input;
 using UnityEngine.InputSystem;
 using Zenject;
 
 namespace Codebase.Utils.Raycast
 {
+    public interface IRaycastable
+    {
+            
+    }
+    
     public class ClickUser : IClicker, IInitializable, IDisposable
     {
         private readonly IRaycastUser _raycastUser;

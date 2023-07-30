@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Codebase.Infrastructure.Factory;
 using Codebase.Logic.Entity;
 using Codebase.Logic.Entity.ProductionEntities.Eating;
+using Codebase.Logic.Entity.ProductionEntities.Production;
+using Codebase.Logic.Entity.ProductionEntities.Production.Resource;
 using Codebase.Utils.Input;
 using Codebase.Utils.Raycast;
 using Cysharp.Threading.Tasks;
@@ -14,33 +16,32 @@ using Zenject;
 
 namespace Codebase.Logic
 {
-    public class EatableSpawner : MonoBehaviour
+    public class EatableSpawner : MonoBehaviour, IClickable
     {
         private IGameFactory _gameFactory;
         private IRaycastUser _raycastUser;
-        private IInputProvider _inputProvider;
+        private IResourcesStorage _resourcesStorage;
 
         [Inject]
         public void Construct(IGameFactory gameFactory,
             IRaycastUser raycastUser,
-            IInputProvider inputProvider)
+            IResourcesStorage resourcesStorage)
         {
             _gameFactory = gameFactory;
             _raycastUser = raycastUser;
-            _inputProvider = inputProvider;
+            _resourcesStorage = resourcesStorage;
         }
+    
+        public void Construct(params IComponent[] components) { }
 
-        private void OnEnable()
+        public void Interact()
         {
-            _inputProvider.PlayerActions.LeftClick.performed += CreateFood;
+            CreateFood();
         }
 
-        private void OnDisable()
-        {
-            _inputProvider.PlayerActions.LeftClick.performed -= CreateFood;
-        }
+        void IClickable.Update() { }
 
-        private async void CreateFood(InputAction.CallbackContext obj)
+        private async void CreateFood()
         {
             if(!_raycastUser.RaycastHit.HasValue)
                 return;
@@ -51,15 +52,14 @@ namespace Codebase.Logic
             await CreateFood(_raycastUser.RaycastHit.Value.point);
         }
 
-        private void Update()
-        {
-            _raycastUser.Tick();
-        }
-
         [Button]
         public async UniTask CreateFood(Vector3 position)
         {
+            if(!_resourcesStorage.HasResource(ResourceType.Food, 1))
+                return;
+                
             await _gameFactory.CreateFood("Food", position);
+            _resourcesStorage.Remove(ResourceType.Food, 1);
         }
     }
 }

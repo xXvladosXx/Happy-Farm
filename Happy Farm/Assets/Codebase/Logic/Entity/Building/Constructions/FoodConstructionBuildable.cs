@@ -1,4 +1,6 @@
 ﻿using Codebase.Infrastructure.Factory;
+using Codebase.Logic.Entity.ProductionEntities.Production.Resource;
+using Codebase.Logic.Stats;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -7,7 +9,7 @@ namespace Codebase.Logic.Entity.Building.Constructions
     public class FoodConstructionBuildable : IBuildable
     {
         private readonly IGameFactory _gameFactory;
-        private Transform _foodProduction;
+        private IDestroyable _foodProduction;
 
         public FoodConstructionBuildable(IGameFactory gameFactory)
         {
@@ -21,10 +23,9 @@ namespace Codebase.Logic.Entity.Building.Constructions
 
         public async UniTask Build(BuildingTypeID buildingTypeID, Transform parent)
         {
-            if(_foodProduction != null)
-                Object.Destroy(_foodProduction.gameObject);
-            
-            _foodProduction = await _gameFactory.CreateFoodProductionConstruction(buildingTypeID, parent.position);
+            _foodProduction?.Destroy();
+
+            _foodProduction = await _gameFactory.CreateResourceProductionConstruction(buildingTypeID, parent.position, ResourceType.Food, ResourceType.Money);
         }
     }
 }

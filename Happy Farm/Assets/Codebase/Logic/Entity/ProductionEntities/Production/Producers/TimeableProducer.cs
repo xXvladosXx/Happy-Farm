@@ -6,18 +6,21 @@ namespace Codebase.Logic.Entity.ProductionEntities.Production.Producers
 {
     public abstract class TimeableProducer : IProducer
     {
-        private readonly IGameFactory _gameFactory;
+        protected readonly IGameFactory GameFactory;
         private readonly float _productionTime;
         private float _currentTimeInProduction;
         public bool InProduction { get; private set; }
-        public int Amount { get; set; }
+        public int Amount { get; private set; }
+        public Transform Transform { get; }
 
-        protected float ProductionTime { get; set; }
-
-        public TimeableProducer(IGameFactory gameFactory,
-            float productionTime)
+        protected TimeableProducer(IGameFactory gameFactory,
+            float productionTime,
+            Transform transform,
+            int amount)
         {
-            _gameFactory = gameFactory;
+            Transform = transform;
+            Amount = amount;
+            GameFactory = gameFactory;
             _productionTime = productionTime;
         }
         
@@ -27,12 +30,12 @@ namespace Codebase.Logic.Entity.ProductionEntities.Production.Producers
         private void StopProduction() =>
             InProduction = false;
         
-        public virtual async UniTask Produce(int amount, Vector3 position)
+        public async UniTask Produce(int amount, Vector3 position)
         {
             Debug.Log($"Production started");
             StartProduction();
 
-            while (_currentTimeInProduction < ProductionTime)
+            while (_currentTimeInProduction < _productionTime)
             {
                 _currentTimeInProduction += Time.deltaTime;
                 await UniTask.Yield();

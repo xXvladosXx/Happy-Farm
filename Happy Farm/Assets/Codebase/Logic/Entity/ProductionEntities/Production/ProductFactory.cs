@@ -6,25 +6,27 @@ using UnityEngine;
 
 namespace Codebase.Logic.Entity.ProductionEntities.Production
 {
-    public class ProductFactory : IComponent
+    public class ProductFactory<T> : IComponent
     {
-        private readonly IProducer _producer;
-        private readonly IConsumer<string> _consumer;
+        private readonly TimeableProducer _producer;
+        private readonly IConsumer<T, int> _consumer;
 
-        public ProductFactory(IProducer producer,
-            IConsumer<string> consumer)
+        public ProductFactory(TimeableProducer producer,
+            IConsumer<T, int> consumer)
         {
             _producer = producer;
             _consumer = consumer;
         }
 
-        public void Interact(Transform transform)
+        public async void Interact(Transform transform)
         {
-            var consumed = _consumer.Consume();
-            if(consumed > 0 && _producer.InProduction == false)
+            if (!_consumer.CanConsume(_consumer.MaxAmount))
+                return;
+            
+            if(_producer.InProduction == false)
             {
-                _consumer.Consume();
-                _producer.Produce(consumed, Vector3.back);
+                var consumed = _consumer.Consume(_consumer.MaxAmount);
+                await _producer.Produce(consumed, _producer.Transform.position);
             }
             else
             {

@@ -15,16 +15,13 @@ namespace Codebase.Logic.Entity.EnemyEntities.Settings
 
         [ShowInInspector, TabGroup("Movement")] 
         public float IdleSpeed;
-
         [ShowInInspector, TabGroup("Movement")] 
         public float RunSpeed;
 
         [ShowInInspector, TabGroup("Catching")] 
         public float MaxTimeToWaitCaught;
-
         [ShowInInspector, TabGroup("Catching")] 
         public float TimeToCatch;
-
         [ShowInInspector, TabGroup("Catching")] 
         public int ClickAmountToCatch;
         

@@ -187,14 +187,6 @@ namespace Codebase.Logic.Storage.Container
             return false;
         }
 
-        public void AddNewSlots(int difference)
-        {
-            for (int i = 0; i < difference; i++)
-            {
-                Slots.Add(new Slot());
-            }
-        }
-
         public int FindItemAmount(string itemId) => 
             Slots.Where(slot => slot.Item != null && slot.Item.ItemID == itemId).Sum(slot => slot.CurrentAmount);
 
@@ -205,7 +197,9 @@ namespace Codebase.Logic.Storage.Container
                 Slots.Add(new Slot());
             }
 
-            Capacity = capacity;
+            Capacity += capacity;
+            
+            OnContainerUpdated?.Invoke();
         }
 
         [Button]

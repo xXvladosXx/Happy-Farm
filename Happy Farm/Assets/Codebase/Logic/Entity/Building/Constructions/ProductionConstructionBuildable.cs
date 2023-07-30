@@ -1,4 +1,5 @@
 using Codebase.Infrastructure.Factory;
+using Codebase.Logic.Stats;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ namespace Codebase.Logic.Entity.Building.Constructions
 {
     public class ProductionConstructionBuildable : IBuildable
     {
-        private ProductionConstruction _currentBuilding;
+        private IDestroyable _currentBuilding;
         private readonly IGameFactory _gameFactory;
 
         public ProductionConstructionBuildable(IGameFactory gameFactory)
@@ -18,18 +19,14 @@ namespace Codebase.Logic.Entity.Building.Constructions
         {
             if(_currentBuilding == null)
                 return true;
-            
-            return !_currentBuilding.Producer.InProduction;
+
+            return true;
         }
 
         public async UniTask Build(BuildingTypeID buildingTypeID, Transform parent)
         {
-            if(_currentBuilding != null)
-                Object.Destroy(_currentBuilding.Transform.gameObject);
-            
-            if(_currentBuilding != null && _currentBuilding.Producer.InProduction)
-                return;
-            
+            _currentBuilding?.Destroy();
+
             _currentBuilding =
                 await _gameFactory.CreateProductionConstruction(buildingTypeID, parent.position);
         }

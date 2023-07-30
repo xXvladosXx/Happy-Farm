@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace Codebase.Utils.Raycast
 {
     public interface IComponent

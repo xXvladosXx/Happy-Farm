@@ -13,6 +13,7 @@ namespace Codebase.Logic.Entity.Building
         private readonly IBuildable _buildable;
         private readonly Dictionary<Upgrade, List<IRequirement>> _upgrades;
         private Upgrade _currentUpgrade;
+        private Transform _buildPoint;
 
         public BuildingUpgrader(Dictionary<Upgrade, List<IRequirement>> upgrades,
             IBuildable buildable)
@@ -33,7 +34,7 @@ namespace Codebase.Logic.Entity.Building
                     return;
             }
 
-            await Upgrade(transform);
+            await Upgrade(_buildPoint);
         }
 
         public void Update()
@@ -42,9 +43,10 @@ namespace Codebase.Logic.Entity.Building
 
         public async UniTask Upgrade(Transform transform)
         {
+            _buildPoint = transform;
             if (_buildable.IsSatisfied())
             {
-                await _buildable.Build(_currentUpgrade.BuildingTypeID, transform);
+                await _buildable.Build(_currentUpgrade.BuildingTypeID, _buildPoint);
                 Upgrade();
             }
         }

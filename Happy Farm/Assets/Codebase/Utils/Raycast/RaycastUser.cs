@@ -1,10 +1,11 @@
 ﻿using Codebase.Utils.Input;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Zenject;
 
 namespace Codebase.Utils.Raycast
 {
-    public class RaycastUser : IRaycastUser
+    public class RaycastUser : IRaycastUser, ITickable
     {
         private readonly Camera _camera;
         private readonly IInputProvider _inputProvider;

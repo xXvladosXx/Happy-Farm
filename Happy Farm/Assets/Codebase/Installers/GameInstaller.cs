@@ -5,8 +5,12 @@ using Codebase.Infrastructure.SceneManagement;
 using Codebase.Infrastructure.StateMachine;
 using Codebase.Infrastructure.StaticData;
 using Codebase.Logic.Entity.Building;
+using Codebase.Logic.Entity.EnemyEntities;
 using Codebase.Logic.Entity.ProductionEntities;
 using Codebase.Logic.Entity.ProductionEntities.Eating;
+using Codebase.Logic.Entity.ProductionEntities.Production;
+using Codebase.Logic.Entity.ProductionEntities.Production.Resource;
+using Codebase.Logic.ShopSystem;
 using Codebase.Logic.Storage;
 using Codebase.Logic.Storage.Container;
 using Codebase.Utils.Input;
@@ -55,37 +59,25 @@ namespace Codebase.Installers
             Container.BindInterfacesAndSelfTo<BuildingRegistry>().AsSingle();
             Container.BindInterfacesAndSelfTo<EatableRegistry>().AsSingle();
             Container.BindInterfacesAndSelfTo<AnimalRegistry>().AsSingle();
+            Container.BindInterfacesAndSelfTo<EnemyAnimalRegistry>().AsSingle();
         }
 
         private void CreateInventory()
         {
-            var storageUser = new StorageUser
-            {
-                Inventory = new ItemContainer(0)
-            };
-            
-            Container.Bind<IStorageUser>().To<StorageUser>().FromInstance(storageUser).AsSingle();
+            Container.Bind<IContainer>().To<ItemContainer>().AsSingle();
+            Container.BindInterfacesAndSelfTo<ResourcesStorage>().AsSingle();
+            Container.Bind<IStorageUser>().To<StorageUser>().AsSingle();
+            Container.BindInterfacesAndSelfTo<Shop>().AsSingle();
         }
 
         private void RegisterStaticData()
         {
-            IStaticDataService staticDataService = new StaticDataService();
-            staticDataService.LoadBuildings();
-            staticDataService.LoadStorages();
-            staticDataService.LoadProductionAnimals();
-            staticDataService.LoadEnemyAnimals();
-            staticDataService.LoadLevels();
-            staticDataService.LoadProducts();
-            staticDataService.LoadSpawnPlaces();
-            staticDataService.LoadFoodProductions();
-            Container.BindInstance(staticDataService).AsSingle();
+            Container.BindInterfacesAndSelfTo<StaticDataService>().AsSingle();
         }
 
         private void RegisterAssetProvider()
         {
-            IAssetProvider assetProvider = new AssetProvider();
-            assetProvider.Initialize();
-            Container.BindInstance(assetProvider).AsSingle();
+            Container.BindInterfacesAndSelfTo<AssetProvider>().AsSingle();
         }
     }
 }

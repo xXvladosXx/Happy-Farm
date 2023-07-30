@@ -8,6 +8,7 @@ namespace Codebase.Logic.QuestSystem
     {
         public string Id;
         public string Title;
+        public string Description;
         public Sprite Icon;
         public abstract Core.Mission CreateMission(MissionRequires missionRequires);
     }

@@ -26,4 +26,5 @@ MonoBehaviour:
   <Name>k__BackingField: Bear
   <IsStackable>k__BackingField: 0
   <MaxItemsInStack>k__BackingField: 1
-  <ItemID>k__BackingField: 
+  <ItemID>k__BackingField: Bear
+  <Price>k__BackingField: 100

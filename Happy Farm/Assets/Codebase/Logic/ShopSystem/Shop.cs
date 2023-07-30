@@ -1,23 +1,34 @@
+using System;
+using Codebase.Logic.Entity.ProductionEntities.Production.Resource;
+using Zenject;
+
 namespace Codebase.Logic.ShopSystem
 {
-    public class Shop : IShop
+    public class Shop : IShop, IInitializable, IDisposable
     {
-        private ICurrency _currency;
+        private readonly IResourcesStorage _resourcesStorage;
 
-        public Shop()
+        public Shop(IResourcesStorage resourcesStorage)
         {
-            _currency = new Gold(100);
+            _resourcesStorage = resourcesStorage;
         }
-        
-        public void Sell(int amount)
+
+        public bool WasSold(int amount)
         {
-            _currency.Add(amount);
+            _resourcesStorage.Add(ResourceType.Money, amount);
+            return true;
         }
 
         public void Buy(int amount)
         {
-            if(_currency.CurrentAmount >= amount)
-                _currency.Remove(amount);
+        }
+
+        public void Initialize()
+        {
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

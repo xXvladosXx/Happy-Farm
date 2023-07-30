@@ -11,7 +11,9 @@ namespace Codebase.Logic.QuestSystem.Core
         public string Title => _config.Title;
         public Sprite Icon => _config.Icon;
         public bool IsCompleted { get; private set; }
-        
+
+        public override string ToString() => _config.Description;
+
         public event Action<Mission> OnStarted;
         public event Action<Mission> OnCompleted; 
         public event Action<Mission> OnStateChanged; 

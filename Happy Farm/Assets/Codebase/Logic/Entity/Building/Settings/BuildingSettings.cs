@@ -15,7 +15,7 @@ namespace Codebase.Logic.Entity.Building.Settings
         [ShowInInspector, TabGroup("Production")] 
         public float ProductionTime;
         [ShowInInspector, TabGroup("Production")]
-        public float ProductionAmount;
+        public int ProductionAmount;
         
         [ShowInInspector, TabGroup("Consumption")]
         public int ConsumptionAmount;

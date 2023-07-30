@@ -14,10 +14,60 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LevelKey: Gameplay
   BuildingSpawners:
-  - BuildingTypeID: 256
-    Position: {x: 8.59, y: 0, z: 1.38}
   - BuildingTypeID: 32
     Position: {x: 0.14, y: 0, z: 7.02}
+  - BuildingTypeID: 256
+    Position: {x: 8.59, y: 0, z: 1.38}
   - BuildingTypeID: 4
     Position: {x: -7.91, y: 0, z: -7.87}
+  EnemySpawners:
+  - PortalParticleData:
+      SpawnEffectStart: {fileID: 6260722054157273303, guid: ce483cb9a671e384191a95c0c32adcc1,
+        type: 3}
+      SpawnEffectIdle: {fileID: 106878968833741722, guid: 4caaae2897c6836438838e1a44287ce7,
+        type: 3}
+      SpawnEffectClose: {fileID: 5193625456088631357, guid: 10f140d776af7b64491601c099764123,
+        type: 3}
+    IsLooped: 0
+    EnemyTypeID: 1
+    Position: {x: -6.23, y: 0.1, z: -1.75}
+    TimeToSpawn: 2
+  - PortalParticleData:
+      SpawnEffectStart: {fileID: 6260722054157273303, guid: ce483cb9a671e384191a95c0c32adcc1,
+        type: 3}
+      SpawnEffectIdle: {fileID: 106878968833741722, guid: 4caaae2897c6836438838e1a44287ce7,
+        type: 3}
+      SpawnEffectClose: {fileID: 5193625456088631357, guid: 10f140d776af7b64491601c099764123,
+        type: 3}
+    IsLooped: 0
+    EnemyTypeID: 1
+    Position: {x: 3.4336705, y: 0.1, z: 2.6089923}
+    TimeToSpawn: 1
+  - PortalParticleData:
+      SpawnEffectStart: {fileID: 6260722054157273303, guid: ce483cb9a671e384191a95c0c32adcc1,
+        type: 3}
+      SpawnEffectIdle: {fileID: 106878968833741722, guid: 4caaae2897c6836438838e1a44287ce7,
+        type: 3}
+      SpawnEffectClose: {fileID: 5193625456088631357, guid: 10f140d776af7b64491601c099764123,
+        type: 3}
+    IsLooped: 0
+    EnemyTypeID: 1
+    Position: {x: 4.41, y: 0.1, z: -3.99}
+    TimeToSpawn: 2
+  - PortalParticleData:
+      SpawnEffectStart: {fileID: 6260722054157273303, guid: ce483cb9a671e384191a95c0c32adcc1,
+        type: 3}
+      SpawnEffectIdle: {fileID: 106878968833741722, guid: 4caaae2897c6836438838e1a44287ce7,
+        type: 3}
+      SpawnEffectClose: {fileID: 5193625456088631357, guid: 10f140d776af7b64491601c099764123,
+        type: 3}
+    IsLooped: 0
+    EnemyTypeID: 1
+    Position: {x: -3.2600002, y: 0.1, z: -7.1399994}
+    TimeToSpawn: 20
+  Resources:
+  - Type: 0
+    Amount: 1000
+  - Type: 1
+    Amount: 200
   MissionCatalog: {fileID: 11400000, guid: 1d62e76f381f4574fa1a7d4b392e91a5, type: 2}

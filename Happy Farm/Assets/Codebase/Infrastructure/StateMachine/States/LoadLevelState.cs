@@ -52,6 +52,13 @@ namespace Codebase.Infrastructure.StateMachine.States
             // await _gameFactory.CreatePlayer(PlayerTypeID.Warrior, _levelData);
             await _gameFactory.CreatePlayer();
             await _gameFactory.CreateUI();
+            _gameFactory.CreateResources(_levelData.Resources);
+
+            foreach (var enemySpawner in _levelData.EnemySpawners)
+            {
+                _gameFactory.CreateEnemySpawner(enemySpawner.EnemyTypeID, enemySpawner.Position,
+                    enemySpawner.TimeToSpawn, enemySpawner.IsLooped, enemySpawner.PortalParticleData);
+            }
             
             foreach (var buildingSpawner in _levelData.BuildingSpawners)
             {

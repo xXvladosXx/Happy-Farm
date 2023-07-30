@@ -39,5 +39,8 @@ namespace Codebase.Logic.Entity.ProductionEntities.Settings
 
         [ShowInInspector, BoxGroup("Animation")]
         public AssetReference AnimatorStateHasher;
+        
+        [ShowInInspector, BoxGroup("Price")]
+        public int Price;
     }
 }

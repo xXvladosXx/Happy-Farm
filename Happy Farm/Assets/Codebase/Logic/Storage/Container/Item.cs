@@ -11,5 +11,6 @@ namespace Codebase.Logic.Storage.Container
         [field: SerializeField] public bool IsStackable { get; private set; }
         [field: SerializeField] public int MaxItemsInStack { get; private set; }
         [field: SerializeField] public string ItemID { get; private set; }
+        [field: SerializeField] public int Price { get; private set; }
     }
 }

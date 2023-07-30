@@ -9,20 +9,35 @@ using Codebase.Logic.Entity.EnemyEntities.Settings;
 using Codebase.Logic.Entity.ProductionEntities.Settings;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Zenject;
 
 namespace Codebase.Infrastructure.StaticData
 {
-    public class StaticDataService : IStaticDataService
+    public class StaticDataService : IStaticDataService, IInitializable
     {
         private Dictionary<BuildingTypeID,BuildingSettings> _buildings;
         private Dictionary<BuildingTypeID,StorageSettings> _storages;
         private Dictionary<ProductionAnimalTypeID, ProductionAnimalSettings> _animals;
         private Dictionary<EnemyAnimalTypeID, EnemyAnimalSettings> _enemyAnimals;
         private Dictionary<BuildingTypeID,SpawnPlaceBuildingSettings> _spawnPlaces;
+
         private Dictionary<BuildingTypeID,FoodProductionSettings> _foodProductions;
+
         private Dictionary<string, ProductSettings> _products;
+
         private Dictionary<string, LevelStaticData> _levels;
 
+        public void Initialize()
+        {
+            LoadBuildings();
+            LoadStorages();
+            LoadFoodProductions();
+            LoadProductionAnimals();
+            LoadEnemyAnimals();
+            LoadLevels();
+            LoadProducts();
+            LoadSpawnPlaces();
+        }
 
         public void LoadBuildings()
         {

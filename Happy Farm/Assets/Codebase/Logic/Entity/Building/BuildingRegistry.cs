@@ -1,50 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using Codebase.Infrastructure.StaticData;
+using Codebase.Logic.Stats;
 using Zenject;
 
 namespace Codebase.Logic.Entity.Building
 {
     public class BuildingRegistry : ITickable
     {
-        public List<BuildingTypeID> Buildings { get; } = new List<BuildingTypeID>();
-        public List<ProductionConstruction> ProductionConstructions { get; } = new();
-
+        public Dictionary<IDestroyable, Construction> Constructions { get; } = new();
+    
         public event Action<BuildingTypeID> OnBuilt;
         
         public void Register(BuildingTypeID buildingTypeID,
-            ProductionConstruction productionConstruction)
+            Construction construction,
+            IDestroyable destroyable)
         {
-            Register(buildingTypeID);
-            ProductionConstructions.Add(productionConstruction);
-        }
-
-        public void Register(BuildingTypeID buildingTypeID)
-        {
-            Buildings.Add(buildingTypeID);
+            Constructions.Add(destroyable, construction);
+            destroyable.OnDestroyed += Unregister;
             OnBuilt?.Invoke(buildingTypeID);
         }
 
-        public void Unregister(BuildingTypeID buildingTypeID, 
-            ProductionConstruction productionConstruction)
+        public void Unregister(IDestroyable destroyable)
         {
-            ProductionConstructions.Remove(productionConstruction);
-            Unregister(buildingTypeID);
-        }
-        
-        public void Unregister(BuildingTypeID buildingTypeID)
-        {
-            Buildings.Remove(buildingTypeID);
+            destroyable.OnDestroyed -= Unregister;
+            Constructions.Remove(destroyable);
         }
         
         public void Clear()
         {
-            Buildings.Clear();
+            Constructions.Clear();
         }
 
         public void Tick()
         {
-            foreach (var productionConstruction in ProductionConstructions)
+            foreach (var productionConstruction in Constructions.Values)
                 productionConstruction.Update();
         }
     }

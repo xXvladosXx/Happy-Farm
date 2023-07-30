@@ -55,6 +55,9 @@ namespace Codebase.Logic.Animations.AnimationsReader
         private AnimatorState StateFor(int stateHash)
         {
             AnimatorState state;
+            if (AnimatorStateHasher == null)
+                return AnimatorState.Idle;
+                
             if (stateHash == AnimatorStateHasher.IdleHash)
             {
                 state = AnimatorState.Idle;

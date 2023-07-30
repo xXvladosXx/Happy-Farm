@@ -36,8 +36,8 @@ MonoBehaviour:
   RunSpeed: 6
   HungerThreshold: 20
   EatingRate: 1
-  EatingAmount: 40
-  HungerRate: 4
+  EatingAmount: 20
+  HungerRate: 1
   HungerAmount: 15
   ProductionName: Milk
   AnimatorStateHasher:
@@ -45,3 +45,4 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  Price: 1

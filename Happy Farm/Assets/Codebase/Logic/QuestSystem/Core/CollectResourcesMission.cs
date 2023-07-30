@@ -14,6 +14,8 @@
             _missionRequires = missionRequires;
         }
 
+        public override string ToString() => base.ToString() + $"{GetProgress()*100}%";
+
         protected override void OnStart() => 
             _missionRequires.StorageUser.Inventory.OnContainerUpdated += OnResourcesAdded;
 
@@ -26,10 +28,7 @@
         private void OnResourcesAdded()
         {
             _collectedResources = _missionRequires.StorageUser.Inventory.FindItemAmount(_config.Item.ItemID);
-            if (_collectedResources >= _config.Amount)
-            {
-                NotifyAboutStateChanged();
-            }
+            NotifyAboutStateChanged();
         }
     }
 }

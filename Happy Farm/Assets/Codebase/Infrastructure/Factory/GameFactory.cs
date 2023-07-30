@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Codebase.Infrastructure.AssetService;
 using Codebase.Infrastructure.StaticData;
 using Codebase.Logic.Animations;
 using Codebase.Logic.Animations.AnimationsReader;
 using Codebase.Logic.Entity.Building;
+using Codebase.Logic.Entity.Building.Constructions;
 using Codebase.Logic.Entity.EnemyEntities;
 using Codebase.Logic.Entity.EnemyEntities.Attack;
 using Codebase.Logic.Entity.EnemyEntities.Catch;
@@ -13,11 +15,13 @@ using Codebase.Logic.Entity.ProductionEntities.Eating;
 using Codebase.Logic.Entity.ProductionEntities.Production;
 using Codebase.Logic.Entity.ProductionEntities.Production.Consumers;
 using Codebase.Logic.Entity.ProductionEntities.Production.Producers;
+using Codebase.Logic.Entity.ProductionEntities.Production.Resource;
 using Codebase.Logic.Entity.ProductionEntities.Settings;
 using Codebase.Logic.Stats;
 using Codebase.Logic.Storage;
 using Codebase.Logic.Storage.Container;
 using Codebase.Logic.Upgrades;
+using Codebase.UI;
 using Codebase.UI.Inventory;
 using Codebase.Utils.Cheat;
 using Codebase.Utils.Raycast;
@@ -35,16 +39,18 @@ namespace Codebase.Infrastructure.Factory
         private readonly EatableRegistry _eatableRegistry;
         private readonly BuildingRegistry _buildingRegistry;
         private readonly AnimalRegistry _animalRegistry;
+        private readonly EnemyAnimalRegistry _enemyAnimalRegistry;
+        private readonly IResourcesStorage _resourcesStorage;
         private readonly IStorageUser _storageUser;
-        private readonly FoodRegistry _foodRegistry;
-        private GameObject _ui;
 
         public GameFactory(IAssetProvider assetProvider,
             IStaticDataService staticDataService,
             IStorageUser storageUser,
             EatableRegistry eatableRegistry,
             BuildingRegistry buildingRegistry,
-            AnimalRegistry animalRegistry)
+            AnimalRegistry animalRegistry,
+            EnemyAnimalRegistry enemyAnimalRegistry,
+            IResourcesStorage resourcesStorage)
         {
             _assetProvider = assetProvider;
             _staticDataService = staticDataService;
@@ -52,8 +58,8 @@ namespace Codebase.Infrastructure.Factory
             _eatableRegistry = eatableRegistry;
             _buildingRegistry = buildingRegistry;
             _animalRegistry = animalRegistry;
-            _foodRegistry = new FoodRegistry();
-            _storageUser.Inventory = new ItemContainer();
+            _enemyAnimalRegistry = enemyAnimalRegistry;
+            _resourcesStorage = resourcesStorage;
         }
 
         public async UniTask CreatePlayer()
@@ -67,7 +73,7 @@ namespace Codebase.Infrastructure.Factory
             var animal = await _assetProvider.Load<GameObject>(setting.AnimalPrefab);
             var animalInstance = Object.Instantiate(animal, Vector3.zero, Quaternion.identity);
             var health = new Health(setting.Health);
-            var producer = new InstantItemProducer(this, setting.ProductionName,1);
+            var producer = new InstantItemProducer(this, setting.ProductionName,1, animalInstance.transform);
             var eater = new Eater(setting.HungerThreshold, setting.EatingRate, setting.EatingAmount, 
                 setting.HungerRate, health, producer, animalInstance.transform, setting.HungerAmount);
             var movement = new NavMeshMovement(animalInstance.GetComponent<NavMeshAgent>(), setting.IdleSpeed, setting.RunSpeed);
@@ -93,14 +99,15 @@ namespace Codebase.Infrastructure.Factory
             return productionAnimal;
         }
 
-        public async UniTask<EnemyAnimal> CreateEnemyAnimal(EnemyAnimalTypeID productionAnimalTypeID)
+        public async UniTask<EnemyAnimal> CreateEnemyAnimal(EnemyAnimalTypeID productionAnimalTypeID, Vector3 position)
         {
             var setting = _staticDataService.GetEnemyAnimal(productionAnimalTypeID);
             var animal = await _assetProvider.Load<GameObject>(setting.AnimalPrefab);
-            var animalInstance = Object.Instantiate(animal, Vector3.zero, Quaternion.identity);
+            var animalInstance = Object.Instantiate(animal, position, Quaternion.identity);
             var catchable = new Catchable(setting.ClickAmountToCatch,setting.TimeToCatch,setting.MaxTimeToWaitCaught);
             var movement = new NavMeshMovement(animalInstance.GetComponent<NavMeshAgent>(), setting.IdleSpeed, setting.RunSpeed);
-            var collectable = new Collectable(_storageUser, setting.Item, 1);
+            var destroyable = new Destoyable(animalInstance);
+            var collectable = new Collectable(_storageUser, setting.Item, 1, destroyable);
             
             var animatorStateReader = animalInstance.GetComponent<AnimalStateReader>();
             
@@ -115,6 +122,8 @@ namespace Codebase.Infrastructure.Factory
             var enemyAnimal = new EnemyAnimal(animalInstance.transform, movement, catchable, collectable, animatorStateReader);
             enemyAnimal.BindTransitions();
             
+            _enemyAnimalRegistry.Register(destroyable, enemyAnimal);
+            
             return enemyAnimal;
         }
 
@@ -122,16 +131,16 @@ namespace Codebase.Infrastructure.Factory
         {
             var go = await _assetProvider.Load<GameObject>(foodName);
             var eatable = Object.Instantiate(go, position, Quaternion.identity).GetComponent<Eatable>();
-            var health = new Health(10);
+            var health = new Health(100);
             var healthDestroyable = new HealthDestroyable(health, eatable.gameObject);
             healthDestroyable.Initialize();
             eatable.Construct(health);
             _eatableRegistry.Register(healthDestroyable, eatable);
-
+            
             return eatable;
         }
 
-        public async UniTask<Storage> CreateStorage(BuildingTypeID buildingTypeID, Vector3 position)
+        public async UniTask<IDestroyable> CreateStorage(BuildingTypeID buildingTypeID, Vector3 position)
         {
             var setting = _staticDataService.GetStorage(buildingTypeID);
 
@@ -140,15 +149,13 @@ namespace Codebase.Infrastructure.Factory
             
             var cheater = Object.FindObjectOfType<Cheater>();
             cheater.Construct(_storageUser);
+            _storageUser.Inventory.IncreaseCapacity(setting.Capacity);
+
+            var upgradeDestroyable = new Destoyable(storageInstance);
+            var construction = new Construction();
+            _buildingRegistry.Register(buildingTypeID, construction, upgradeDestroyable);
             
-            var difference = setting.Capacity - _storageUser.Inventory.Capacity;
-            if(difference > 0)
-                _storageUser.Inventory.AddNewSlots(difference);
-            
-            _ui.GetComponentInChildren<InventoryUI>().Construct(_storageUser.Inventory);
-            _buildingRegistry.Register(buildingTypeID);
-            
-            return storageInstance.GetComponent<Storage>();
+            return upgradeDestroyable;
         }
 
         public async UniTask<GameObject> CreateProduct(string productId, Vector3 position, int productionAmount)
@@ -157,8 +164,8 @@ namespace Codebase.Infrastructure.Factory
 
             var go = await _assetProvider.Load<GameObject>(setting.ProductPrefab);
             var productInstance = Object.Instantiate(go, position, Quaternion.identity);
-            
-            var collectable = new Collectable(_storageUser, setting.Item, productionAmount)
+            var destroyable = new Destoyable(productInstance);
+            var collectable = new Collectable(_storageUser, setting.Item, productionAmount, destroyable)
             {
                 CanBeCollected = true
             };
@@ -171,37 +178,51 @@ namespace Codebase.Infrastructure.Factory
             return productInstance;
         }
 
-        public async UniTask<Transform> CreateFoodProductionConstruction(BuildingTypeID buildingTypeID, Vector3 position)
+        public async UniTask<IDestroyable> CreateResourceProductionConstruction(BuildingTypeID buildingTypeID,
+            Vector3 position, ResourceType productionResourceType, ResourceType consumptionResourceType)
         {
             var setting = _staticDataService.GetFoodProduction(buildingTypeID);
             
-            _foodRegistry.Upgrade(setting.MaxAmount);
+            _resourcesStorage.IncreaseMaxAmount(productionResourceType, setting.ProductionAmount);
             
             var go = await _assetProvider.Load<GameObject>(setting.BuildingPrefab);
             var construction = Object.Instantiate(go, position, Quaternion.identity);
-            var producer = new TimeableFoodProducer(this, setting.ProductionAmount, setting.ProductionTime, _foodRegistry);
+            var producer = new TimeableResourceProducer(this, setting.ProductionAmount, setting.ProductionTime,
+                construction.transform, productionResourceType, _resourcesStorage);
+            IConsumer<ResourceType, int> consumer = new ResourceConsumer(consumptionResourceType, _resourcesStorage, setting.Cost);
+            var factory = new ProductFactory<ResourceType>(producer, consumer);
 
-            return construction.transform;
+            var clickable = construction.AddComponent<Clickable>();
+            clickable.Construct(factory);
+            
+            var upgradeDestroyable = new Destoyable(construction);
+            var productionConstruction = new ProductionConstruction(producer, construction.transform);
+            productionConstruction.BindTransitions();
+            _buildingRegistry.Register(buildingTypeID, productionConstruction, upgradeDestroyable);
+            
+            return upgradeDestroyable;
         }
         
-        public async UniTask<ProductionConstruction> CreateProductionConstruction(BuildingTypeID buildingTypeID, Vector3 position)
+        public async UniTask<IDestroyable> CreateProductionConstruction(BuildingTypeID buildingTypeID, Vector3 position)
         {
             var setting = _staticDataService.GetBuilding(buildingTypeID);
             var go = await _assetProvider.Load<GameObject>(setting.BuildingPrefab);
             var construction = Object.Instantiate(go, position, Quaternion.identity);
-            var producer = new TimeableItemProducer(this, setting.Item, setting.ProductionTime);
-            IConsumer<string> consumer = new ItemConsumer(_storageUser, setting.ConsumptionItem, setting.ConsumptionAmount);
-            var factory = new ProductFactory(producer, consumer);
+            var producer = new TimeableItemProducer(this, setting.Item, setting.ProductionTime, 
+                construction.GetComponent<ProductionPoint>().SpawnPoint, setting.ProductionAmount);
+            IConsumer<string, int> consumer = new ItemConsumer(_storageUser, setting.ConsumptionItem, setting.ConsumptionAmount);
+            var factory = new ProductFactory<string>(producer, consumer);
             
             var clickable = construction.AddComponent<Clickable>();
             clickable.Construct(factory);
             
+            var upgradeDestroyable = new Destoyable(construction);
             var productionConstruction = new ProductionConstruction(producer, construction.transform);
             productionConstruction.BindTransitions();
             
-            _buildingRegistry.Register(buildingTypeID, productionConstruction);
+            _buildingRegistry.Register(buildingTypeID, productionConstruction, upgradeDestroyable);
 
-            return productionConstruction;
+            return upgradeDestroyable;
         }
         
         
@@ -216,7 +237,7 @@ namespace Codebase.Infrastructure.Factory
             {
                 upgrades.Add(upgrade, new List<IRequirement>
                 {
-                    new MoneyRequirement(upgrade.Cost, 4444)
+                    new MoneyRequirement(upgrade.Cost, _resourcesStorage)
                 });
             }
 
@@ -225,19 +246,31 @@ namespace Codebase.Infrastructure.Factory
             var spawnable = new BuildingUpgrader(upgrades, buildable);
             if (setting.BuildingTypeID != BuildingTypeID.None)
             {
-                await spawnable.Upgrade(productInstance.transform);;    
+                await spawnable.Upgrade(productInstance.GetComponent<BuildingSpawnPoint>().SpawnPoint);   
             }
             
             var clickable = productInstance.GetComponent<Clickable>();
             clickable.Construct(spawnable);
         }
 
+        public void CreateEnemySpawner(EnemyAnimalTypeID enemyAnimalTypeID, Vector3 spawnPosition, float time,
+            bool isLooped, PortalParticleData enemySpawnerPortalParticleData)
+        {
+            var enemySpawner = new EnemySpawner(this, enemyAnimalTypeID, spawnPosition, time, isLooped, enemySpawnerPortalParticleData);
+            enemySpawner.SpawnEnemy();
+        }
+        
         public async UniTask CreateUI()
         {
             var ui = await _assetProvider.Load<GameObject>(AssetPath.UI_PATH);
-            _ui = Object.Instantiate(ui, Vector3.zero, Quaternion.identity);
+        }
 
-            _ui.GetComponentInChildren<InventoryUI>().Construct(_storageUser.Inventory);
+        public void CreateResources(List<ResourcesData> levelDataResources)
+        {
+            foreach (var resourcesData in levelDataResources)
+            {
+                _resourcesStorage.Add(resourcesData.Type, resourcesData.Amount);
+            }
         }
     }
 }

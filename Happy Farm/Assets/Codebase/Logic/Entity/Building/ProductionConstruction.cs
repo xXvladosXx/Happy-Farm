@@ -3,18 +3,19 @@ using Codebase.Logic.Entity.Building.States;
 using Codebase.Logic.Entity.ProductionEntities.Production;
 using Codebase.Logic.Entity.ProductionEntities.Production.Producers;
 using Codebase.Logic.Entity.StateMachine;
+using Codebase.Logic.Stats;
 using UnityEngine;
 
 namespace Codebase.Logic.Entity.Building
 {
-    public class ProductionConstruction 
+    public class ProductionConstruction : Construction 
     {
-        public IProducer Producer { get; private set; }
+        public TimeableProducer Producer { get; private set; }
         public Transform Transform { get; private set; }
 
         private EntityStateMachine<ProductionConstruction> _stateMachine;
 
-        public ProductionConstruction(IProducer producer,
+        public ProductionConstruction(TimeableProducer producer,
             Transform transform)
         {
             Producer = producer;
@@ -31,14 +32,15 @@ namespace Codebase.Logic.Entity.Building
         public void BindTransitions()
         {
             Func<bool> isNotProducing = () => Producer.InProduction == false;
+            Func<bool> isProducing = () => Producer.InProduction;
 
-            _stateMachine.AddTransition<ProductionBuildingIdleState, ProductionBuildingProductionState>(() => !isNotProducing());
+            _stateMachine.AddTransition<ProductionBuildingIdleState, ProductionBuildingProductionState>(isProducing);
             _stateMachine.AddTransition<ProductionBuildingProductionState, ProductionBuildingIdleState>(isNotProducing);
 
             _stateMachine.SetState<ProductionBuildingIdleState>();
         }
 
-        public void Update()
+        public override void Update()
         {
             _stateMachine.Update();
         }

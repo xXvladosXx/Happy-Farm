@@ -30,8 +30,11 @@ namespace Codebase.Logic.QuestSystem.Core
 
         private void OnBuildingBuilt(BuildingTypeID buildingTypeID)
         {
-            if(buildingTypeID == _config.BuildingTypeID)
+            if (buildingTypeID == _config.BuildingTypeID)
+            {
+                _isBuilt = true;
                 NotifyAboutStateChanged();
+            }
         }
     }
 }

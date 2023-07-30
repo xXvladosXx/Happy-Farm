@@ -23,7 +23,7 @@ MonoBehaviour:
     SerializationNodes: []
   BuildingTypeID: 64
   BuildingPrefab:
-    m_AssetGUID: fc803bba40fdbb240b8687ab8db8909a
+    m_AssetGUID: 3af6e833063da5c4aba54783760a14ff
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
