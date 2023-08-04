@@ -3,5 +3,6 @@
     public interface IAttackable
     {
         void TakeDamage();
+        bool WasDamaged { get; }
     }
 }

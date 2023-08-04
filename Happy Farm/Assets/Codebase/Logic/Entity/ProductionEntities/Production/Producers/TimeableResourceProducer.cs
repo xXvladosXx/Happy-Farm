@@ -32,9 +32,5 @@ namespace Codebase.Logic.Entity.ProductionEntities.Production.Producers
         {
             await Produce(Amount, Vector3.zero);
         }
-
-        public void Update()
-        {
-        }
     }
 }

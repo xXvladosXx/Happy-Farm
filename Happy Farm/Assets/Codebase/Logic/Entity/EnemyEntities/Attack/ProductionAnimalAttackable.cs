@@ -6,16 +6,8 @@ namespace Codebase.Logic.Entity.EnemyEntities.Attack
 {
     public class ProductionAnimalAttackable : MonoBehaviour, IAttackable
     {
-        private IDestroyable _productionAnimal;
+        public bool WasDamaged { get; private set; }
 
-        public void Construct(IDestroyable productionAnimal)
-        {
-            _productionAnimal = productionAnimal;
-        }
-        
-        public void TakeDamage()
-        {
-            _productionAnimal.Destroy();
-        }
+        public void TakeDamage() => WasDamaged = true;
     }
 }

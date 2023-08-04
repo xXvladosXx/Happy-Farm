@@ -8,8 +8,8 @@ namespace Codebase.Logic.Entity.Building.States
 {
     public class ProductionBuildingProductionState: State<ProductionConstruction>
     {
-        private Vector3 originalScale;
-        private Sequence productionSequence;
+        private Vector3 _originalScale;
+        private Sequence _productionSequence;
 
         public ProductionBuildingProductionState(ProductionConstruction stateInitializer) : base(stateInitializer)
         {
@@ -17,25 +17,25 @@ namespace Codebase.Logic.Entity.Building.States
 
         public override void OnEnter()
         {
-            originalScale = Initializer.Transform.localScale;
+            _originalScale = Initializer.Transform.localScale;
             
             Animate();
         }
 
         private void Animate()
         {
-            productionSequence = DOTween.Sequence();
-            productionSequence.Append(Initializer.Transform.DOScale(new Vector3(originalScale.x, originalScale.y*1.2f, originalScale.z), .25f))
+            _productionSequence = DOTween.Sequence();
+            _productionSequence.Append(Initializer.Transform.DOScale(new Vector3(_originalScale.x, _originalScale.y*1.2f, _originalScale.z), .25f))
                 .SetEase(Ease.InOutSine);
 
-            productionSequence.Append(Initializer.Transform.DOShakeRotation(.3f, 5f, 6, 45f))
+            _productionSequence.Append(Initializer.Transform.DOShakeRotation(.3f, 5f, 6, 45f))
                 .SetEase(Ease.InOutSine);
             
-            productionSequence.Append(Initializer.Transform.DOScale(new Vector3(originalScale.x * 1.2f, originalScale.y, originalScale.z * 1.2f), .25f))
+            _productionSequence.Append(Initializer.Transform.DOScale(new Vector3(_originalScale.x * 1.2f, _originalScale.y, _originalScale.z * 1.2f), .25f))
                 .SetEase(Ease.InOutSine);
 
-            productionSequence.SetLoops(-1, LoopType.Yoyo);
-            productionSequence.Play();
+            _productionSequence.SetLoops(-1, LoopType.Yoyo);
+            _productionSequence.Play();
         }
 
         public override void OnUpdate()
@@ -45,9 +45,9 @@ namespace Codebase.Logic.Entity.Building.States
 
         public override void OnExit()
         {
-            productionSequence.OnKill(() => Initializer.Transform.DOScale(new Vector3(originalScale.x, originalScale.y, originalScale.z), .25f))
+            _productionSequence.OnKill(() => Initializer.Transform.DOScale(new Vector3(_originalScale.x, _originalScale.y, _originalScale.z), .25f))
                 .SetEase(Ease.InOutSine);
-            productionSequence.Kill(true);
+            _productionSequence.Kill(true);
         }
     }
 }

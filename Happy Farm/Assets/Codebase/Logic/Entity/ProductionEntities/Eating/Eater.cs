@@ -2,11 +2,12 @@
 using Codebase.Logic.Entity.ProductionEntities.Production;
 using Codebase.Logic.Entity.ProductionEntities.Production.Producers;
 using Codebase.Logic.Stats;
+using Codebase.Logic.TimeManagement;
 using UnityEngine;
 
 namespace Codebase.Logic.Entity.ProductionEntities.Eating
 {
-    public class Eater : IEater
+    public class Eater : IEater, IPauseHandler
     {
         private readonly IProducer _producer;
         private readonly Transform _transform;
@@ -20,6 +21,7 @@ namespace Codebase.Logic.Entity.ProductionEntities.Eating
 
         private float _timeSinceLastHunger;
         private float _timeSinceLastEating;
+        private bool _isPaused;
 
         public event Action OnHunger;
         public event Action OnAte;
@@ -41,6 +43,9 @@ namespace Codebase.Logic.Entity.ProductionEntities.Eating
 
         public void Starve()
         {
+            if(_isPaused)
+                return;
+            
             _timeSinceLastHunger += Time.deltaTime;
             if(_timeSinceLastHunger < HungerRate)
                 return;
@@ -54,11 +59,14 @@ namespace Codebase.Logic.Entity.ProductionEntities.Eating
 
         public async void Eat()
         {
+            if(_isPaused)
+                return;
+            
             _timeSinceLastEating += Time.deltaTime;
             if(_timeSinceLastEating < EatingRate)
                 return;
             
-            if (Eatable == null || Eatable.Equals(null))
+            if (Eatable == null || Eatable.Equals(null) || Eatable.Transform == null)
                 return;
             
             Health.Increase(EatingAmount);
@@ -70,6 +78,11 @@ namespace Codebase.Logic.Entity.ProductionEntities.Eating
                 OnAte?.Invoke();
                 await _producer.Produce(_producer.Amount, _transform.position);
             }
+        }
+
+        public void SetPaused(bool isPaused)
+        {
+            _isPaused = isPaused;
         }
     }
 }

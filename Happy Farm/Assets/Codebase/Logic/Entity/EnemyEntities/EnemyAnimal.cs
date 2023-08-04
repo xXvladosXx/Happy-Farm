@@ -1,21 +1,18 @@
 ﻿using System;
-using Codebase.Logic.Animations;
 using Codebase.Logic.Animations.AnimationsReader;
 using Codebase.Logic.Entity.EnemyEntities.Catch;
 using Codebase.Logic.Entity.EnemyEntities.States;
 using Codebase.Logic.Entity.Movement;
 using Codebase.Logic.Entity.ProductionEntities.Production;
 using Codebase.Logic.Entity.StateMachine;
-using Codebase.Logic.Storage.Container;
-using Codebase.Utils.Raycast;
 using Codebase.Utils.Transform;
 using UnityEngine;
 
 namespace Codebase.Logic.Entity.EnemyEntities
 {
-    public class EnemyAnimal
+    public class EnemyAnimal : IGameBehaviour
     {
-        public readonly ICatchable Catchable;
+        public readonly Catchable Catchable;
         public readonly ICollectable Collectable;
         public readonly IMovable Movement;
         public readonly IAnimatorStateReader AnimatorStateReader;
@@ -25,7 +22,7 @@ namespace Codebase.Logic.Entity.EnemyEntities
 
         public EnemyAnimal(Transform transform, 
             IMovable movement,
-            ICatchable catchable,
+            Catchable catchable,
             ICollectable collectable,
             IAnimatorStateReader animatorStateReader)
         {
@@ -66,7 +63,17 @@ namespace Codebase.Logic.Entity.EnemyEntities
             _stateMachine.SetState<EnemyAnimalIdleState>();
         }
         
-        public void Update() => 
+        public bool GameUpdate()
+        {
+            if (Collectable.WasCollected)
+                return false;
+                
             _stateMachine.Update();
+            Catchable.Update();
+            
+            return true;
+        }
+
+        public void Recycle() { }
     }
 }

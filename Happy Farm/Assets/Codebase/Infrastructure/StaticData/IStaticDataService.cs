@@ -3,12 +3,14 @@ using Codebase.Logic.Entity.Building;
 using Codebase.Logic.Entity.Building.Settings;
 using Codebase.Logic.Entity.Building.Settings.SpawnPlace;
 using Codebase.Logic.Entity.EnemyEntities.Settings;
+using Codebase.Logic.Entity.ProductionEntities.Eating;
 using Codebase.Logic.Entity.ProductionEntities.Settings;
 
 namespace Codebase.Infrastructure.StaticData
 {
     public interface IStaticDataService
     {
+        void LoadEatable();
         void LoadBuildings();
         void LoadStorages();
         void LoadFoodProductions();
@@ -17,7 +19,7 @@ namespace Codebase.Infrastructure.StaticData
         void LoadLevels();
         void LoadProducts();
         void LoadSpawnPlaces();
-        
+
         BuildingSettings GetBuilding(BuildingTypeID buildingTypeId);
         StorageSettings GetStorage(BuildingTypeID buildingTypeId);
         FoodProductionSettings GetFoodProduction(BuildingTypeID buildingTypeId);
@@ -26,5 +28,6 @@ namespace Codebase.Infrastructure.StaticData
         EnemyAnimalSettings GetEnemyAnimal(EnemyAnimalTypeID enemyAnimalTypeID);
         ProductSettings GetProduct(string productTypeId);
         LevelStaticData ForLevel(string sceneKey);
+        EatableSettings GetEatable(EatableTypeID eatableTypeID);
     }
 }

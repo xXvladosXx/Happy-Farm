@@ -5,19 +5,54 @@ using UnityEngine;
 
 namespace Codebase.Logic.Entity.ProductionEntities.Eating
 {
-    public class Eatable : SerializedMonoBehaviour, IEatable
+    public class Eatable : IEatable
     {
-        public Health Health { get; private set; }
-        public Transform Transform => transform;
+        public Transform Transform { get; private set; }
+        
+        private readonly Health _health;
+        private readonly IDestroyable _destroyable;
+        private readonly EatableHealthData _healthData;
 
-        public void Construct(Health health)
+        private float _currentTime;
+        
+        public Eatable(Health health,
+            Transform transform,
+            IDestroyable destroyable,
+            EatableHealthData healthData)
         {
-            Health = health;
+            _health = health;
+            Transform = transform;
+            _destroyable = destroyable;
+            _healthData = healthData;
         }
 
         public void Consume(float amount)
         {
-            Health.Decrease(amount);
+            _health.Decrease(amount);
+        }
+
+        public bool GameUpdate()
+        {
+            _currentTime += Time.deltaTime;
+            
+            if (_health.CurrentHealth > 0)
+            {
+                if (_currentTime > _healthData.HealthDecreaseInterval)
+                {
+                    _health.Decrease(_healthData.HealthDecrease);
+                    _currentTime = 0;
+                }
+                
+                return true;
+            }
+            
+            Recycle();
+            return false;
+        }
+
+        public void Recycle()
+        {
+            _destroyable.Destroy();   
         }
     }
 }

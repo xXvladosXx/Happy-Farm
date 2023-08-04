@@ -6,6 +6,7 @@ using Codebase.Logic.Entity.Building;
 using Codebase.Logic.Entity.Building.Settings;
 using Codebase.Logic.Entity.Building.Settings.SpawnPlace;
 using Codebase.Logic.Entity.EnemyEntities.Settings;
+using Codebase.Logic.Entity.ProductionEntities.Eating;
 using Codebase.Logic.Entity.ProductionEntities.Settings;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -20,15 +21,15 @@ namespace Codebase.Infrastructure.StaticData
         private Dictionary<ProductionAnimalTypeID, ProductionAnimalSettings> _animals;
         private Dictionary<EnemyAnimalTypeID, EnemyAnimalSettings> _enemyAnimals;
         private Dictionary<BuildingTypeID,SpawnPlaceBuildingSettings> _spawnPlaces;
-
+        private Dictionary<EatableTypeID, EatableSettings> _eatables;
         private Dictionary<BuildingTypeID,FoodProductionSettings> _foodProductions;
 
         private Dictionary<string, ProductSettings> _products;
-
         private Dictionary<string, LevelStaticData> _levels;
 
         public void Initialize()
         {
+            LoadEatable();
             LoadBuildings();
             LoadStorages();
             LoadFoodProductions();
@@ -39,6 +40,12 @@ namespace Codebase.Infrastructure.StaticData
             LoadSpawnPlaces();
         }
 
+        public void LoadEatable()
+        {
+            _eatables = Resources.LoadAll<EatableSettings>(AssetPath.EATABLE_SETTINGS)
+                .ToDictionary(x => x.EatableTypeID, x => x);
+        }
+        
         public void LoadBuildings()
         {
             _buildings = Resources.LoadAll<BuildingSettings>(AssetPath.BUILDING_SETTINGS)
@@ -85,6 +92,10 @@ namespace Codebase.Infrastructure.StaticData
             _levels = Resources.LoadAll<LevelStaticData>(AssetPath.LEVEL_SETTINGS)
                 .ToDictionary(x => x.LevelKey, x => x);
 
+        public EatableSettings GetEatable(EatableTypeID eatableTypeId) =>
+            _eatables.TryGetValue(eatableTypeId, out var eatableSettings)
+                ? eatableSettings : null;
+        
         public BuildingSettings GetBuilding(BuildingTypeID buildingTypeId) =>
             _buildings.TryGetValue(buildingTypeId, out var buildingSettings)
                 ? buildingSettings : null;

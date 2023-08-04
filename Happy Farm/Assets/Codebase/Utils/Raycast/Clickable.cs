@@ -21,14 +21,6 @@ namespace Codebase.Utils.Raycast
             }
         }
 
-        public void Update()
-        {
-            foreach (var component in _components)
-            {
-                component.Update();
-            }
-        }
-
         private void AddComponents(IComponent[] components)
         {
             foreach (var component in components)

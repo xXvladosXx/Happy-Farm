@@ -33,9 +33,5 @@ namespace Codebase.Logic.Entity.ProductionEntities.Production
                 Debug.Log($"Can not start production from {_consumer.GetProduct()}");
             }
         }
-
-        public void Update()
-        {
-        }
     }
 }

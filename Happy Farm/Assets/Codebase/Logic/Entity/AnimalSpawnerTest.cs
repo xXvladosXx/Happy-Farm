@@ -15,17 +15,8 @@ namespace Codebase.Logic.Entity
     {
         private IGameFactory _gameFactory;
         private List<ProductionAnimal> _productionAnimals = new List<ProductionAnimal>();
-        private List<EnemyAnimal> _enemyAnimals = new List<EnemyAnimal>();
         private List<ProductionConstruction> _constructions = new List<ProductionConstruction>();
-        private AnimalRegistry _animalRegistry;
 
-        [Inject]
-        public void Construct(IGameFactory gameFactory,
-            AnimalRegistry animalRegistry)
-        {
-            _gameFactory = gameFactory;
-            _animalRegistry = animalRegistry;
-        }
 
         [Button]
         public async UniTask CreateAnimal()
@@ -33,12 +24,6 @@ namespace Codebase.Logic.Entity
             await _gameFactory.CreateProductionAnimal(ProductionAnimalTypeID.Cow);
         }
 
-        [Button]
-        private async UniTask CreateEnemyAnimal()
-        {
-            var animal = await _gameFactory.CreateEnemyAnimal(EnemyAnimalTypeID.Bear, Vector3.zero);
-            _enemyAnimals.Add(animal);
-        }
 
         [Button]
         private async UniTask CreateSpawnerConstruction()
@@ -49,13 +34,6 @@ namespace Codebase.Logic.Entity
         private void Update()
         {
             if(Input.GetKeyDown(KeyCode.Space)) CreateAnimal();
-            if(Input.GetKeyDown(KeyCode.T)) CreateEnemyAnimal();
-
-
-            for (int i = 0; i < _enemyAnimals.Count; i++)
-            {
-                _enemyAnimals[i].Update();
-            }
         }
     }
 }

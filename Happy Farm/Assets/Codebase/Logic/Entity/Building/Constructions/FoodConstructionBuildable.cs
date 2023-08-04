@@ -9,7 +9,7 @@ namespace Codebase.Logic.Entity.Building.Constructions
     public class FoodConstructionBuildable : IBuildable
     {
         private readonly IGameFactory _gameFactory;
-        private IDestroyable _foodProduction;
+        private ProductionConstruction _foodProduction;
 
         public FoodConstructionBuildable(IGameFactory gameFactory)
         {
@@ -18,12 +18,15 @@ namespace Codebase.Logic.Entity.Building.Constructions
         
         public bool IsSatisfied()
         {
-            return true;
+            if(_foodProduction == null)
+                return true;
+            
+            return !_foodProduction.Producer.InProduction;
         }
 
         public async UniTask Build(BuildingTypeID buildingTypeID, Transform parent)
         {
-            _foodProduction?.Destroy();
+            _foodProduction?.Recycle();
 
             _foodProduction = await _gameFactory.CreateResourceProductionConstruction(buildingTypeID, parent.position, ResourceType.Food, ResourceType.Money);
         }

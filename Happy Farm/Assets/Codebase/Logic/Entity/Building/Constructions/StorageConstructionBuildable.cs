@@ -8,7 +8,7 @@ namespace Codebase.Logic.Entity.Building.Constructions
     public class StorageConstructionBuildable : IBuildable
     {
         private readonly IGameFactory _gameFactory;
-        private IDestroyable _storage;
+        private Construction _storage;
 
         public StorageConstructionBuildable(IGameFactory gameFactory)
         {
@@ -22,7 +22,7 @@ namespace Codebase.Logic.Entity.Building.Constructions
 
         public async UniTask Build(BuildingTypeID buildingTypeID, Transform parent)
         {
-            _storage?.Destroy();
+            _storage?.Recycle();
 
             _storage = await _gameFactory.CreateStorage(buildingTypeID, parent.position);
         }

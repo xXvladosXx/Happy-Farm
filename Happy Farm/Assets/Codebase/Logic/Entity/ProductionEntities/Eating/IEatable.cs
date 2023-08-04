@@ -2,7 +2,7 @@
 
 namespace Codebase.Logic.Entity.ProductionEntities.Eating
 {
-    public interface IEatable
+    public interface IEatable : IGameBehaviour
     {
         Transform Transform { get; }
         void Consume(float amount);

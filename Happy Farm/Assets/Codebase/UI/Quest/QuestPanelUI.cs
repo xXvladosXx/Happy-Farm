@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Codebase.Logic.QuestSystem.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -23,7 +24,12 @@ namespace Codebase.UI.Quest
                 mission.OnCompleted += quest.End;
             }
         }
-        
+
+        private void OnDestroy()
+        {
+            Dispose();
+        }
+
         public void Dispose()
         {
             foreach (var quest in _quests)

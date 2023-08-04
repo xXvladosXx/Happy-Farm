@@ -11,5 +11,6 @@
         public static string LEVEL_SETTINGS = "Level Settings";
         public static string STORAGE_SETTINGS = "Storage Settings";
         public static string FOOD_PRODUCTION_SETTINGS = "Food Production Settings";
+        public static string EATABLE_SETTINGS = "Eatable Settings";
     }
 }

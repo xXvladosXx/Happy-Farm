@@ -78,3 +78,5 @@ MonoBehaviour:
     type: 3}
   _coroutineRunner: {fileID: 4428498239002430565, guid: 5b9562a3e0ccacd4292a1b6dac8f830e,
     type: 3}
+  _persistentUI: {fileID: 5252571048520182732, guid: 677f8666c6363bf41b0ae66a08bf5016,
+    type: 3}

@@ -5,10 +5,11 @@ namespace Codebase.Logic.Entity.EnemyEntities.Catch
 {
     public class Catchable : ICatchable, IComponent
     {
-        private readonly int _clickAmountToCatch;
-        private readonly float _timeToCatch;
         [field: SerializeField] public bool IsCaught { get; private set; }
         [field: SerializeField] public float MaxTimeToWaitCaught { get; private set; }
+        
+        private readonly int _clickAmountToCatch;
+        private readonly float _timeToCatch;
 
         private float _timeSinceClicked;
         public int CurrentAmountToCatch { get; private set; }

@@ -4,6 +4,7 @@ using Codebase.Infrastructure.Factory;
 using Codebase.Infrastructure.SceneManagement;
 using Codebase.Infrastructure.StateMachine;
 using Codebase.Infrastructure.StaticData;
+using Codebase.Logic.Entity;
 using Codebase.Logic.Entity.Building;
 using Codebase.Logic.Entity.EnemyEntities;
 using Codebase.Logic.Entity.ProductionEntities;
@@ -13,6 +14,7 @@ using Codebase.Logic.Entity.ProductionEntities.Production.Resource;
 using Codebase.Logic.ShopSystem;
 using Codebase.Logic.Storage;
 using Codebase.Logic.Storage.Container;
+using Codebase.UI;
 using Codebase.Utils.Input;
 using UnityEngine;
 using Zenject;
@@ -23,6 +25,7 @@ namespace Codebase.Installers
     {
         [SerializeField] private GameBootstrapper _gameBootstrapper;
         [SerializeField] private CoroutineRunner _coroutineRunner;
+        [SerializeField] private PersistentUI _persistentUI;
         
         public override void InstallBindings()
         {
@@ -49,17 +52,11 @@ namespace Codebase.Installers
 
             Container.Bind<IInputProvider>().To<InputProvider>().AsSingle();
             Container.Bind<IGameFactory>().To<GameFactory>().AsSingle();
+            Container.BindInterfacesAndSelfTo<GameBehaviourHandler>().AsSingle();
+
+            Container.Bind<PersistentUI>().FromComponentInNewPrefab(_persistentUI).AsSingle();
             
             CreateInventory();
-            CreateRegistries();
-        }
-
-        private void CreateRegistries()
-        {
-            Container.BindInterfacesAndSelfTo<BuildingRegistry>().AsSingle();
-            Container.BindInterfacesAndSelfTo<EatableRegistry>().AsSingle();
-            Container.BindInterfacesAndSelfTo<AnimalRegistry>().AsSingle();
-            Container.BindInterfacesAndSelfTo<EnemyAnimalRegistry>().AsSingle();
         }
 
         private void CreateInventory()

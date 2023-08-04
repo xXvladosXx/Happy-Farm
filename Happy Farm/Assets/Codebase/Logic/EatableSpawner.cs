@@ -31,15 +31,11 @@ namespace Codebase.Logic
             _raycastUser = raycastUser;
             _resourcesStorage = resourcesStorage;
         }
-    
-        public void Construct(params IComponent[] components) { }
 
         public void Interact()
         {
             CreateFood();
         }
-
-        void IClickable.Update() { }
 
         private async void CreateFood()
         {
@@ -58,7 +54,7 @@ namespace Codebase.Logic
             if(!_resourcesStorage.HasResource(ResourceType.Food, 1))
                 return;
                 
-            await _gameFactory.CreateFood("Food", position);
+            await _gameFactory.CreateFood(EatableTypeID.Grass , position);
             _resourcesStorage.Remove(ResourceType.Food, 1);
         }
     }

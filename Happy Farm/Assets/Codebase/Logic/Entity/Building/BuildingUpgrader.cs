@@ -37,10 +37,6 @@ namespace Codebase.Logic.Entity.Building
             await Upgrade(_buildPoint);
         }
 
-        public void Update()
-        {
-        }
-
         public async UniTask Upgrade(Transform transform)
         {
             _buildPoint = transform;

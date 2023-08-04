@@ -1,3 +1,4 @@
+using Codebase.Logic.Entity;
 using Codebase.Logic.Entity.Building;
 using Codebase.Logic.Storage;
 
@@ -6,13 +7,13 @@ namespace Codebase.Logic.QuestSystem
     public class MissionRequires
     {
         public readonly IStorageUser StorageUser;
-        public readonly BuildingRegistry BuildingRegistry;
+        public readonly GameBehaviourHandler GameBehaviour;
 
         public MissionRequires(IStorageUser storageUser, 
-            BuildingRegistry buildingRegistry)
+            GameBehaviourHandler gameBehaviour)
         {
             StorageUser = storageUser;
-            BuildingRegistry = buildingRegistry;
+            GameBehaviour = gameBehaviour;
         }
     }
 }

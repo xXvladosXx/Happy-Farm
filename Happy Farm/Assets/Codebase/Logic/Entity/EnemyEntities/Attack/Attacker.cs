@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Codebase.Logic.Entity.EnemyEntities.Attack
 {
-    public class AnimalAttacker : MonoBehaviour, IAttacker
+    public class Attacker : MonoBehaviour, IAttacker
     {
         [SerializeField] private TriggerObserver _attackTrigger;
-
+        
         private void OnEnable()
         {
             _attackTrigger.OnTriggerEntered += Attack;
@@ -20,8 +20,10 @@ namespace Codebase.Logic.Entity.EnemyEntities.Attack
 
         public void Attack(Collider collider)
         {
-            if(collider.TryGetComponent(out IAttackable attackable))
-                attackable.TakeDamage();
+            if (!collider.TryGetComponent(out IAttackable attackable))
+                return;
+            
+            attackable.TakeDamage();
         }
     }
 }

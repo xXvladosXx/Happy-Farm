@@ -13,5 +13,4 @@ MonoBehaviour:
   m_Name: MissionCatalog
   m_EditorClassIdentifier: 
   Missions:
-  - {fileID: 11400000, guid: ac094d955dd92c94dba35797ef6c578e, type: 2}
   - {fileID: 11400000, guid: 039a22d703eb96e45a4c67ee7a95afd6, type: 2}

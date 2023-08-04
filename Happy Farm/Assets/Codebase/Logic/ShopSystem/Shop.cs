@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Codebase.Logic.Entity.ProductionEntities.Production.Resource;
 using Zenject;
 
@@ -13,7 +13,7 @@ namespace Codebase.Logic.ShopSystem
             _resourcesStorage = resourcesStorage;
         }
 
-        public bool WasSold(int amount)
+        public bool Sell(int amount)
         {
             _resourcesStorage.Add(ResourceType.Money, amount);
             return true;

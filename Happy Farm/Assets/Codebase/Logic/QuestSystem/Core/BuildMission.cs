@@ -1,5 +1,6 @@
 ﻿using System;
 using Codebase.Infrastructure.StaticData;
+using Codebase.Logic.Entity;
 using Codebase.Logic.Entity.Building;
 using Unity.VisualScripting;
 
@@ -20,17 +21,23 @@ namespace Codebase.Logic.QuestSystem.Core
         }
 
         protected override void OnStart() => 
-            _missionRequires.BuildingRegistry.OnBuilt += OnBuildingBuilt;
+            _missionRequires.GameBehaviour.OnGameBehaviourAdded += OnEntityAdded;
 
         protected override void OnComplete() => 
-            _missionRequires.BuildingRegistry.OnBuilt -= OnBuildingBuilt;
+            _missionRequires.GameBehaviour.OnGameBehaviourAdded -= OnEntityAdded;
 
         protected override float GetProgress() =>
             Convert.ToSingle(_isBuilt);
 
-        private void OnBuildingBuilt(BuildingTypeID buildingTypeID)
+        private void OnEntityAdded(IGameBehaviour gameBehaviour)
         {
-            if (buildingTypeID == _config.BuildingTypeID)
+            if(gameBehaviour is Construction construction)
+                CheckBuilding(construction.BuildingTypeID);
+        }
+
+        private void CheckBuilding(BuildingTypeID constructionBuildingTypeID)
+        {
+            if (constructionBuildingTypeID == _config.BuildingTypeID)
             {
                 _isBuilt = true;
                 NotifyAboutStateChanged();

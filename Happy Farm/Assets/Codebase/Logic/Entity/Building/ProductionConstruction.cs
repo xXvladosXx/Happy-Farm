@@ -8,18 +8,18 @@ using UnityEngine;
 
 namespace Codebase.Logic.Entity.Building
 {
-    public class ProductionConstruction : Construction 
+    public class ProductionConstruction : Construction
     {
         public TimeableProducer Producer { get; private set; }
-        public Transform Transform { get; private set; }
-
+        
         private EntityStateMachine<ProductionConstruction> _stateMachine;
 
         public ProductionConstruction(TimeableProducer producer,
-            Transform transform)
+            Transform transform,
+            IDestroyable destroyable, 
+            BuildingTypeID buildingTypeID) : base(buildingTypeID, destroyable, transform)
         {
             Producer = producer;
-            Transform = transform;
 
             _stateMachine = new EntityStateMachine<ProductionConstruction>();
 
@@ -40,9 +40,11 @@ namespace Codebase.Logic.Entity.Building
             _stateMachine.SetState<ProductionBuildingIdleState>();
         }
 
-        public override void Update()
+        public override bool GameUpdate()
         {
+            base.GameUpdate();
             _stateMachine.Update();
+            return true;
         }
     }
 }

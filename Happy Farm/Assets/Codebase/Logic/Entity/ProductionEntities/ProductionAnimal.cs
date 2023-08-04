@@ -2,26 +2,28 @@
 using System.Linq;
 using Codebase.Logic.Animations;
 using Codebase.Logic.Animations.AnimationsReader;
+using Codebase.Logic.Entity.EnemyEntities.Attack;
 using Codebase.Logic.Entity.Movement;
 using Codebase.Logic.Entity.ProductionEntities.Eating;
 using Codebase.Logic.Entity.ProductionEntities.Production;
 using Codebase.Logic.Entity.ProductionEntities.Production.Producers;
 using Codebase.Logic.Entity.ProductionEntities.States;
 using Codebase.Logic.Entity.StateMachine;
+using Codebase.Logic.Stats;
 using Codebase.Utils.Transform;
 using UnityEngine;
 
 namespace Codebase.Logic.Entity.ProductionEntities
 {
-    public class ProductionAnimal
+    public class ProductionAnimal : IGameBehaviour
     {
         public Transform Transform { get; set; }
         
         public readonly IAnimatorStateReader AnimatorStateReader;
         public readonly IEater Eater;
         public readonly IMovable Movement;
-        public readonly IProducer Producer;
-        public readonly EatableRegistry EatableRegistry;
+        public readonly GameBehaviourHandler GameBehaviourHandler;
+        public readonly IDestroyable Destroyable;
 
         private readonly EntityStateMachine<ProductionAnimal> _stateMachine;
 
@@ -29,17 +31,16 @@ namespace Codebase.Logic.Entity.ProductionEntities
         public ProductionAnimal(IEater eater,
             IMovable movement,
             Transform transform,
-            EatableRegistry eatableRegistry,
-            IProducer producer,
-            IAnimatorStateReader animatorStateReader)
+            GameBehaviourHandler gameBehaviourHandler,
+            IAnimatorStateReader animatorStateReader,
+            IDestroyable destroyable)
         {
             Transform = transform;
             Eater = eater;
             Movement = movement;
-            Producer = producer;
+            GameBehaviourHandler = gameBehaviourHandler;
             AnimatorStateReader = animatorStateReader;
-
-            EatableRegistry = eatableRegistry;
+            Destroyable = destroyable;
 
             _stateMachine = new EntityStateMachine<ProductionAnimal>();
             
@@ -55,12 +56,12 @@ namespace Codebase.Logic.Entity.ProductionEntities
 
         public void BindTransitions()
         {
-            Func<bool> hasFoodToEat = () => EatableRegistry.Eatables.Count > 0;
+            Func<bool> hasFoodToEat = () => GameBehaviourHandler.GetBehaviour<Eatable>() != null;
             Func<bool> isHungry = () => _isHungry;
             Func<bool> isNearTarget = () => Transform.IsNear(Movement.Target, 2);
             Func<bool> hasTarget = () => Movement.Target != Vector3.zero;
             Func<bool> healthLessThanZero = () => Eater.Health.CurrentHealth <= 0;
-            Func<bool> hasCurrentFood = () => Eater.Eatable != null && !Eater.Eatable.Equals(null);
+            Func<bool> hasCurrentFood = () => Eater.Eatable != null && !Eater.Eatable.Equals(null) && Eater.Eatable.Transform != null;
 
             _stateMachine.AddTransition<ProductionAnimalIdleState, ProductionAnimalWalkState>(hasTarget);
             _stateMachine.AddTransition<ProductionAnimalWalkState, ProductionAnimalIdleState>(() => isNearTarget() && !isHungry());
@@ -73,7 +74,6 @@ namespace Codebase.Logic.Entity.ProductionEntities
             
             _stateMachine.AddTransition<ProductionAnimalMoveToFoodState, ProductionAnimalEatState>(isNearTarget);
             _stateMachine.AddTransition<ProductionAnimalEatState, ProductionAnimalMoveToFoodState>(() => !isHungry() || !hasFoodToEat() || !hasCurrentFood());
-
             
             _stateMachine.AddTransition<ProductionAnimalStarveState, ProductionAnimalDeathState>(healthLessThanZero);
             
@@ -91,9 +91,27 @@ namespace Codebase.Logic.Entity.ProductionEntities
             Eater.OnHunger -= SetHungry;
             Eater.OnAte -= SetFull;
         }
-        
-        public void Update() => 
+
+        public bool GameUpdate()
+        {
+            if(Transform == null)
+                return false;
+
+            if (Eater.Health.CurrentHealth <= 0)
+            {
+                Recycle();
+                return false;
+            }
+            
             _stateMachine.Update();
+
+            return true;
+        }
+
+        public void Recycle()
+        {
+            Destroyable.Destroy();
+        }
 
         private void SetFull() => 
             _isHungry = false;

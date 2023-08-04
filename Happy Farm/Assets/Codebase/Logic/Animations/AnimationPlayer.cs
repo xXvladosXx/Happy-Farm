@@ -17,9 +17,5 @@ namespace Codebase.Logic.Animations
         {
             _animatorStateReader.PlayAnimation(1);
         }
-
-        public void Update()
-        {
-        }
     }
 }

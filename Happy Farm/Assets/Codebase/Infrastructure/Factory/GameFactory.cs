@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Codebase.Infrastructure.AssetService;
+using Codebase.Infrastructure.SceneManagement;
 using Codebase.Infrastructure.StaticData;
 using Codebase.Logic.Animations;
 using Codebase.Logic.Animations.AnimationsReader;
+using Codebase.Logic.Entity;
 using Codebase.Logic.Entity.Building;
 using Codebase.Logic.Entity.Building.Constructions;
 using Codebase.Logic.Entity.EnemyEntities;
@@ -36,30 +38,24 @@ namespace Codebase.Infrastructure.Factory
     {
         private readonly IAssetProvider _assetProvider;
         private readonly IStaticDataService _staticDataService;
-        private readonly EatableRegistry _eatableRegistry;
-        private readonly BuildingRegistry _buildingRegistry;
-        private readonly AnimalRegistry _animalRegistry;
-        private readonly EnemyAnimalRegistry _enemyAnimalRegistry;
         private readonly IResourcesStorage _resourcesStorage;
+        private readonly ICoroutineRunner _coroutineRunner;
         private readonly IStorageUser _storageUser;
+        private readonly GameBehaviourHandler _gameBehaviour;
 
         public GameFactory(IAssetProvider assetProvider,
             IStaticDataService staticDataService,
             IStorageUser storageUser,
-            EatableRegistry eatableRegistry,
-            BuildingRegistry buildingRegistry,
-            AnimalRegistry animalRegistry,
-            EnemyAnimalRegistry enemyAnimalRegistry,
-            IResourcesStorage resourcesStorage)
+            IResourcesStorage resourcesStorage,
+            ICoroutineRunner coroutineRunner,
+            GameBehaviourHandler gameBehaviourHandler)
         {
             _assetProvider = assetProvider;
             _staticDataService = staticDataService;
             _storageUser = storageUser;
-            _eatableRegistry = eatableRegistry;
-            _buildingRegistry = buildingRegistry;
-            _animalRegistry = animalRegistry;
-            _enemyAnimalRegistry = enemyAnimalRegistry;
+            _gameBehaviour = gameBehaviourHandler;
             _resourcesStorage = resourcesStorage;
+            _coroutineRunner = coroutineRunner;
         }
 
         public async UniTask CreatePlayer()
@@ -83,18 +79,16 @@ namespace Codebase.Infrastructure.Factory
             animatorStateHasher.Init();
             animatorStateReader.Construct(animatorStateHasher, animalInstance.GetComponent<Animator>(), movement, .2f);
 
-            var healthDestroyable = new HealthDestroyable(health, animalInstance);
-            healthDestroyable.Initialize();
+            var destroyable = new Destoyable(animalInstance);
 
-            var attackable = animalInstance.GetComponent<ProductionAnimalAttackable>();
-            attackable.Construct(healthDestroyable);
+            var productionAnimal = new ProductionAnimal(eater, movement, 
+                animalInstance.transform, _gameBehaviour, 
+                animatorStateReader, destroyable);
             
-            var productionAnimal = new ProductionAnimal(eater, movement, animalInstance.transform,
-                _eatableRegistry, producer, animatorStateReader);
             productionAnimal.BindTransitions();
             productionAnimal.Initialize();
             
-            _animalRegistry.Register(healthDestroyable, productionAnimal);
+            _gameBehaviour.Add(productionAnimal);
             
             return productionAnimal;
         }
@@ -116,31 +110,33 @@ namespace Codebase.Infrastructure.Factory
             animatorStateReader.Construct(animatorStateHasher, animalInstance.GetComponent<Animator>(), movement, .2f);
 
             var animationPlayer = new AnimationPlayer(animatorStateReader);
-
+            
             var clickable = animalInstance.GetComponent<Clickable>();
             clickable.Construct(collectable,catchable,animationPlayer);
             var enemyAnimal = new EnemyAnimal(animalInstance.transform, movement, catchable, collectable, animatorStateReader);
             enemyAnimal.BindTransitions();
             
-            _enemyAnimalRegistry.Register(destroyable, enemyAnimal);
+            _gameBehaviour.Add(enemyAnimal);
+            _gameBehaviour.Add(collectable);
             
             return enemyAnimal;
         }
 
-        public async UniTask<Eatable> CreateFood(string foodName, Vector3 position)
+        public async UniTask<Eatable> CreateFood(EatableTypeID eatableTypeID, Vector3 position)
         {
-            var go = await _assetProvider.Load<GameObject>(foodName);
-            var eatable = Object.Instantiate(go, position, Quaternion.identity).GetComponent<Eatable>();
-            var health = new Health(100);
-            var healthDestroyable = new HealthDestroyable(health, eatable.gameObject);
-            healthDestroyable.Initialize();
-            eatable.Construct(health);
-            _eatableRegistry.Register(healthDestroyable, eatable);
+            var eatableSettings = _staticDataService.GetEatable(eatableTypeID); 
+            var go = await _assetProvider.Load<GameObject>(eatableSettings.Prefab);
+            var gameObject = Object.Instantiate(go, position, Quaternion.identity);
+            var health = new Health(eatableSettings.EatableHealthData.Health);
+            var destroyable = new Destoyable(gameObject);
+            var eatable = new Eatable(health, gameObject.transform, destroyable, eatableSettings.EatableHealthData);
+            
+            _gameBehaviour.Add(eatable);
             
             return eatable;
         }
 
-        public async UniTask<IDestroyable> CreateStorage(BuildingTypeID buildingTypeID, Vector3 position)
+        public async UniTask<Construction> CreateStorage(BuildingTypeID buildingTypeID, Vector3 position)
         {
             var setting = _staticDataService.GetStorage(buildingTypeID);
 
@@ -151,11 +147,10 @@ namespace Codebase.Infrastructure.Factory
             cheater.Construct(_storageUser);
             _storageUser.Inventory.IncreaseCapacity(setting.Capacity);
 
-            var upgradeDestroyable = new Destoyable(storageInstance);
-            var construction = new Construction();
-            _buildingRegistry.Register(buildingTypeID, construction, upgradeDestroyable);
-            
-            return upgradeDestroyable;
+            var destroyable = new Destoyable(storageInstance);
+            var construction = new Construction(buildingTypeID, destroyable, storageInstance.transform);
+                
+            return construction;
         }
 
         public async UniTask<GameObject> CreateProduct(string productId, Vector3 position, int productionAmount)
@@ -175,10 +170,12 @@ namespace Codebase.Infrastructure.Factory
             
             Debug.Log($"Product created {collectable}");
             
+            _gameBehaviour.Add(collectable);
+            
             return productInstance;
         }
 
-        public async UniTask<IDestroyable> CreateResourceProductionConstruction(BuildingTypeID buildingTypeID,
+        public async UniTask<ProductionConstruction> CreateResourceProductionConstruction(BuildingTypeID buildingTypeID,
             Vector3 position, ResourceType productionResourceType, ResourceType consumptionResourceType)
         {
             var setting = _staticDataService.GetFoodProduction(buildingTypeID);
@@ -196,11 +193,12 @@ namespace Codebase.Infrastructure.Factory
             clickable.Construct(factory);
             
             var upgradeDestroyable = new Destoyable(construction);
-            var productionConstruction = new ProductionConstruction(producer, construction.transform);
+            var productionConstruction = new ProductionConstruction(producer, construction.transform, upgradeDestroyable, buildingTypeID);
             productionConstruction.BindTransitions();
-            _buildingRegistry.Register(buildingTypeID, productionConstruction, upgradeDestroyable);
             
-            return upgradeDestroyable;
+            _gameBehaviour.Add(productionConstruction);
+
+            return productionConstruction;
         }
         
         public async UniTask<IDestroyable> CreateProductionConstruction(BuildingTypeID buildingTypeID, Vector3 position)
@@ -216,13 +214,13 @@ namespace Codebase.Infrastructure.Factory
             var clickable = construction.AddComponent<Clickable>();
             clickable.Construct(factory);
             
-            var upgradeDestroyable = new Destoyable(construction);
-            var productionConstruction = new ProductionConstruction(producer, construction.transform);
+            var destroyable = new Destoyable(construction);
+            var productionConstruction = new ProductionConstruction(producer, construction.transform, destroyable, buildingTypeID);
             productionConstruction.BindTransitions();
             
-            _buildingRegistry.Register(buildingTypeID, productionConstruction, upgradeDestroyable);
-
-            return upgradeDestroyable;
+            _gameBehaviour.Add(productionConstruction);
+            
+            return destroyable;
         }
         
         
@@ -256,8 +254,8 @@ namespace Codebase.Infrastructure.Factory
         public void CreateEnemySpawner(EnemyAnimalTypeID enemyAnimalTypeID, Vector3 spawnPosition, float time,
             bool isLooped, PortalParticleData enemySpawnerPortalParticleData)
         {
-            var enemySpawner = new EnemySpawner(this, enemyAnimalTypeID, spawnPosition, time, isLooped, enemySpawnerPortalParticleData);
-            enemySpawner.SpawnEnemy();
+            var enemySpawner = new EnemySpawner(this, enemyAnimalTypeID, spawnPosition, time, isLooped, enemySpawnerPortalParticleData, _coroutineRunner);
+            enemySpawner.Initialize();
         }
         
         public async UniTask CreateUI()

@@ -20,11 +20,11 @@ namespace Codebase.Infrastructure.Factory
         UniTask CreatePlayer();
         UniTask<ProductionAnimal> CreateProductionAnimal(ProductionAnimalTypeID productionAnimalTypeID);
         UniTask<EnemyAnimal> CreateEnemyAnimal(EnemyAnimalTypeID productionAnimalTypeID, Vector3 position);
-        UniTask<Eatable> CreateFood(string foodName, Vector3 position);
-        UniTask<IDestroyable> CreateStorage(BuildingTypeID buildingTypeID, Vector3 position);
+        UniTask<Eatable> CreateFood(EatableTypeID eatableTypeID, Vector3 position);
+        UniTask<Construction> CreateStorage(BuildingTypeID buildingTypeID, Vector3 position);
         UniTask<GameObject> CreateProduct(string productId, Vector3 position, int productionAmount);
         UniTask<IDestroyable> CreateProductionConstruction(BuildingTypeID buildingTypeID, Vector3 position);
-        UniTask<IDestroyable> CreateResourceProductionConstruction(BuildingTypeID buildingTypeID, Vector3 position,
+        UniTask<ProductionConstruction> CreateResourceProductionConstruction(BuildingTypeID buildingTypeID, Vector3 position,
             ResourceType productionResourceType, ResourceType consumptionResourceType);
         UniTask CreateProductionSpawner(BuildingTypeID buildingTypeID, Vector3 buildingSpawnerPosition);
         UniTask CreateUI();
